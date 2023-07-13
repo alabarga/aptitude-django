@@ -1,0 +1,13 @@
+#!/bin/bash
+export TMPDIR=/home/serendipity/apps/aptitude_django/tmp
+mkdir -p /home/serendipity/apps/aptitude_django/tmp
+PIDFILE="/home/serendipity/apps/aptitude_django/tmp/uwsgi.pid"
+
+if [ -e "$PIDFILE" ] && (pgrep -u serendipity | grep -x -f $PIDFILE &> /dev/null); then
+  echo "uWSGI for aptitude_django already running."
+  exit 99
+fi
+
+/home/serendipity/apps/aptitude_django/env/bin/uwsgi --ini /home/serendipity/apps/aptitude_django/uwsgi.ini
+
+echo "Started uWSGI for aptitude_django."

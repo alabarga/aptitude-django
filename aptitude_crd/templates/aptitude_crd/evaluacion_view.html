@@ -1,0 +1,133 @@
+{% extends 'aptitude/base.html' %}
+{% load i18n %}
+{% load cuestionarios %}
+{% block extra_head %}
+<script src="/static/js/jquery-3.2.0.min.js"></script>
+{{ form.media }}
+{% endblock %}
+
+{% block slider %}
+{% endblock %}
+
+{% block title %}
+{{evaluacion.cuestionario.nombre}}
+{% endblock title%}
+{% block breadcrumbs %}
+
+{% endblock breadcrumbs%}
+
+{% block content %}
+
+    <div>
+
+    <h4>
+    {{ evaluacion.cuestionario.descripcion |safe }}
+    </h4>
+
+    {% if evaluacion.cuestionario.guia %}
+        <p>
+            <a href="/media/{{ evaluacion.cuestionario.guia }}">
+              <i class="sl sl-icon-docs"></i> Descargar instrucciones</a>
+        </p>
+    {% endif %}
+
+    </div>
+
+
+
+    <form id="resource_form" method="post" class="with-forms" action=".">
+
+        {% csrf_token %}
+        {{ form.errors }}
+
+        {% for field in form.hidden_fields %}
+        {{field}}
+        {% endfor %}
+
+        <!-- Section -->
+        <div class="add-listing-section margin-top-45">
+
+
+            <!-- Headline -->
+            <div class="add-listing-headline">
+                <h3><i class="sl sl-icon-note"></i>{% trans "Cuestionario" noop %}</h3>
+            </div>
+
+            <div class="row with-forms">
+                    <div class="col-md-12">
+
+                    {% for nombre_bloque in form.visible_fields|bloques %}
+                      <h3>{{ nombre_bloque|default_if_none:"" }}</h3>
+                        {% for field in form.visible_fields|bloque:nombre_bloque %}
+
+                          <h4> {{ field.label }}</h4>
+                          {% if field.label != field.help_text %}
+                          <p> {{ field.help_text }}</p>
+                          {% endif %}
+
+                        {% if field.field.tipo == 'VAL' %} <!-- field.field.choices -->
+                            <div class="checkboxes in-row margin-bottom-40">
+
+                                {% for c in field.field.choices %}
+                                <input class='like-radio' id="{{ field.auto_id}}_{{ forloop.counter0 }}" type="checkbox"
+                                        value="{{ c.0 }}" name="{{ field.name }}"
+                                        {% ifequal c.0 field.value.0 %} checked {% endifequal %}
+                                >
+                                <label for="{{ field.auto_id}}_{{ forloop.counter0 }}">{{ c.1 }}</label><br/>
+                                {% endfor %}
+
+                            </div>
+                        {% elif field.field.tipo == 'MULTIPLE' %} <!-- field.field.choices -->
+                            <div class="checkboxes in-row margin-bottom-40">
+
+                                {% for c in field.field.choices %}
+
+                                <input class='notlike-radio' id="{{ field.auto_id}}_{{ forloop.counter0 }}" type="checkbox"
+                                        value="{{ c.0 }}" name="{{ field.name }}"
+                                        {% if c.0 in field.value.0 %} checked {% endif %}
+                                >
+                                <label for="{{ field.auto_id}}_{{ forloop.counter0 }}">{{ c.1 }}</label><br/>
+                                {% endfor %}
+
+                            </div>
+                        {% else %}
+                            {{ field }}
+                        {% endif %}
+
+
+                        {% endfor %}
+                    {% endfor %}
+                </div>
+            </div>
+
+
+        <input type="submit" name="update_button" value="{% trans 'Guardar' noop %}" />
+
+        </div>
+    </form>
+
+
+
+{% endblock %}
+
+{% block javascript %}
+{{ block.super }}
+
+<script type="text/javascript">
+    $(document).ready(function(){
+          $('.like-radio').click(function(){
+                Checkbox_to_RadioButton(this);
+          });
+    });
+    function Checkbox_to_RadioButton(box){
+          $('input:checkbox[name=' + box.name + ']').each(function(){
+                if (this != box) $(this).attr('checked', false);
+          });
+    }
+    </script>
+
+<!--script type="text/javascript" src="/static/js/dropzone.js"></script-->
+{% endblock %}
+
+{% block maps %}
+{% endblock %}

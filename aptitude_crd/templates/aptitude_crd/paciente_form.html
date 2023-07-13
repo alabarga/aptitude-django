@@ -1,0 +1,219 @@
+{% extends 'aptitude/base.html' %}
+{% load i18n %}
+{% block extra_head %}
+<script src="/static/js/jquery-3.2.0.min.js"></script>
+{{ form.media }}
+{% endblock %}
+
+{% block slider %}
+{% endblock %}
+
+{% block title %}
+Pacientes
+{% endblock title%}
+{% block breadcrumbs %}
+<li>Pacientes</li>
+<li>{{object}}</li>
+{% endblock breadcrumbs%}
+
+{% block content %}
+
+    {% if request.user.is_superuser %}
+    <div class="add-listing-section margin-bottom-45">
+
+        <!-- Headline -->
+        <div class="add-listing-headline">
+            <h3><i class="sl sl-icon-user"></i>{% trans "Paciente" noop %}</h3>
+        </div>
+
+        <!-- Title -->
+        <div class="row with-forms">
+            <div class="col-md-4">
+                <h3>{% trans "Código asignado" noop %}: {{object}}</h3>
+            </div>
+
+        </div>
+
+    </div>
+    {% endif %}
+
+
+    <div class="add-listing-section margin-bottom-45">
+
+
+        <!-- Title -->
+        <div class="row">
+            {{ form.errors }}
+        </div>
+
+    </div>
+
+<form action="." method="POST" class="submit-form">
+
+    {% csrf_token %}
+
+
+    <input type='hidden' id="id_codigo" name="codigo" value="{{object.codigo}}"/>
+    <input type='hidden' id="id_dni" name="dni" value="{{object.dni}}"/>
+    <input type='hidden' id="id_user" name="user" value="{{object.user.id}}">
+    <!-- Section -->
+    <div class="add-listing-section">
+
+        <!-- Headline -->
+        <div class="add-listing-headline">
+            <h3><i class="sl sl-icon-user"></i> Datos personales</h3>
+        </div>
+
+        <!-- Title -->
+        <div class="row with-forms">
+            <div class="col-md-4">
+                <h5>Nombre</h5>
+                <input class="search-field" id="id_nombre" name="nombre" type="text" value="{{ form.nombre.value }}"/>
+            </div>
+            <div class="col-md-8">
+                <h5>Apellidos</h5>
+                <input class="search-field" id="id_apellidos" name="apellidos" type="text" value="{{ form.apellidos.value }}"/>
+            </div>
+        </div>
+
+    </div>
+
+
+    <!-- Section -->
+    <div class="add-listing-section margin-top-45">
+
+        <!-- Headline -->
+        <div class="add-listing-headline">
+            <h3><i class="sl sl-icon-location"></i> Dirección</h3>
+        </div>
+
+        <div class="submit-section">
+
+            <!-- Row -->
+            <div class="row with-forms">
+                <!-- Address -->
+                <div class="col-md-6">
+                    <h5>Dirección</h5>
+                    <input type="text" id="id_direccion" name="direccion">
+                </div>
+
+                <!-- City -->
+                <div class="col-md-4">
+                    <h5>Ciudad</h5>
+                    <input type="text" id="id_ciudad" name="ciudad">
+                </div>
+
+                <!-- Country -->
+                <div class="col-md-2">
+                    <h5>Territorio</h5>
+                    <select class="chosen-select-no-single" id="id_territorio" name="territorio">
+                        <option value=0 {% if form.pais.value|default_if_none:0 == 0 %} selected {% endif %}>Navarra</option>
+                        <option value=1 {% if form.pais.value|default_if_none:0 == 1 %} selected {% endif %}>Alt Urgell</option>
+                        <option value=2 {% if form.pais.value|default_if_none:0 == 2 %} selected {% endif %}>Badalona</option>
+                        <option value=3 {% if form.pais.value|default_if_none:0 == 3 %} selected {% endif %}>Baix Ebre</option>
+                        <option value=4 {% if form.pais.value|default_if_none:0 == 4 %} selected {% endif %}>Reus</option>
+                        <option value=5 {% if form.pais.value|default_if_none:0 == 5 %} selected {% endif %}>Ripollès</option>
+
+                    </select>
+                </div>
+
+            </div>
+
+            <div class="row with-forms">
+
+                <div class="col-md-3">
+                    <h5>Telefono</h5>
+                    <input type="text" id="id_telefono" name="telefono">
+                </div>
+                <div class="col-md-3">
+                    <h5>Código postal</h5>
+                    <input type="text" id="id_cp" name="cp">
+                </div>
+                <div class="col-md-6">
+                    <h5>E-mail</h5>
+                    <input type="text" id="id_email" name="email">
+                </div>
+            </div>
+
+            <!-- Row / End -->
+
+        </div>
+    </div>
+    <!-- Section / End -->
+
+
+    <!-- Section -->
+    <div class="add-listing-section margin-top-45">
+
+        <!-- Headline -->
+        <div class="add-listing-headline">
+            <h3><i class="sl sl-icon-doc"></i> Información básica</h3>
+        </div>
+
+        <!-- Title -->
+        <div class="row with-forms">
+            <div class="col-md-6">
+                <h5>Sexo</h5>
+                <select class="chosen-select-no-single" id="id_sexo" name="sexo">
+                    <option value="1">Hombre</option>
+                    <option value="2">Mujer</option>
+                </select>
+            </div>
+            <div class="col-md-6">
+                <h5>Fecha de nacimiento</h5>
+                <input class="search-field" id="id_fecha_nacimiento" name="fecha_nacimiento" placeholder="dd/mm/aaaa" type="text" value=""/>
+            </div>
+        </div>
+
+    </div>
+    <!-- Section / End -->
+
+    <!-- Section -->
+    <div class="add-listing-section margin-top-45 margin-bottom-45"">
+
+        <!-- Headline -->
+        <div class="add-listing-headline">
+            <h3><i class="sl sl-icon-doc"></i> Información adicional</h3>
+        </div>
+
+        <!-- Title -->
+        <div class="row with-forms">
+            <div class="col-md-5">
+                <h5>Nivel máximo estudios que ha completado</h5>
+                <select class="chosen-select-no-single" id="id_nivel_estudios" name="nivel_estudios">
+                    <option value="0">Sin estudios (no ha finalizado estudios 1os infantiles o adultos, aunque sepa leer y escribir)</option>
+                    <option value="1">Primarios (enseñanza elemental, educación básica o primaria, educación 1ª para adultos)</option>
+                    <option value="2">Secundarios (bachillerato, comercio, enseñanza profesional, educación 2ª para adultos)</option>
+                    <option value="3">Universitarios (grado, diplomatura, licenciatura, doctorado)</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <h5>¿Dónde vive usted?</h5>
+                <select class="chosen-select-no-single" id="id_vivienda" name="vivienda">
+                    <option value="1">En su casa</option>
+                    <option value="2">En casa de un hijo/hija</option>
+                    <option value="3">En casa de otro familiar</option>
+                    <option value="4">En un piso para personas mayores</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <h5>¿Con cuantas personas convive? </h5>
+                <input type="number" id="id_convivientes" name="convivientes" value="0">
+            </div>
+        </div>
+
+    </div>
+
+    <input type="submit" name="update_button" value="{% trans 'Guardar y continuar a la evaluación' noop %}" />
+
+    </form>
+
+{% endblock %}
+
+{% block javascript %}
+{{ block.super }}
+
+{% endblock %}
+
+{% block maps %}
+{% endblock %}

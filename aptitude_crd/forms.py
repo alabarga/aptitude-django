@@ -1,0 +1,249 @@
+from django import forms
+from django.forms import SelectDateWidget, HiddenInput
+from .models import Evaluacion, Pregunta, Componente, Registro
+from django.utils.translation import gettext as _
+
+from registration.forms import RegistrationForm
+from django.contrib.auth.models import User
+
+_COMP_TYPES = (
+    ('TEXT', _("Texto")),
+    ('NUM', _("Numérico")),
+    ('VAL', _("Lista_Valor")),
+	('LIST', _("Lista")),
+    ('CALC', _("Calculado")),
+    )
+
+# Field classes for all available field types.
+_FIELD_CLASSES = {
+    'TEXT': forms.CharField,
+    'NUM': forms.FloatField,
+    'VAL': forms.ChoiceField,
+    'LIST': forms.ChoiceField,
+    'EMAIL': forms.EmailField,
+    'CHECKBOX': forms.BooleanField,
+    'MULTIPLE': forms.MultipleChoiceField,
+    'CHECKBOX_MULTIPLE': forms.MultipleChoiceField,
+    'SELECT_MULTIPLE': forms.MultipleChoiceField,
+    'FILE': forms.FileField,
+    'DATE': forms.DateField,
+    'DATE_TIME': forms.DateTimeField,
+    'DOB': forms.DateField,
+    'HIDDEN': forms.CharField,
+    'NUMBER': forms.FloatField,
+    'URL': forms.URLField,
+}
+
+
+class CustomRegistrationForm(RegistrationForm):
+    location = forms.CharField(required=False)
+
+    class Meta:
+        model = User
+        fields = ('username', 'email', 'location', 'password1', 'password2')
+
+    def save(self, commit=True):
+        with transaction.atomic():
+            user = super(CustomRegistrationForm, self).save()
+            user.refresh_from_db()  # very important! this will load the profile instance created by the signal
+            user.profile.location = self.cleaned_data.get('location')
+            # set here all other values
+            user.save()
+            return user
+
+class SearchForm(forms.Form):
+    dni = forms.CharField()
+
+class RegistroForm(forms.ModelForm):
+
+    fecha_nacimiento = forms.DateField(input_formats=('%d/%m/%Y', ))
+    check = forms.BooleanField(required = True)
+    class Meta:
+        model = Registro
+        fields = '__all__'
+
+class ScreeningForm(forms.ModelForm):
+
+    todo_ok = forms.BooleanField(required = False)
+    class Meta:
+        model = Evaluacion
+        fields = '__all__'
+
+
+    def __init__(self, *args, **kwargs):
+
+        super().__init__(*args, **kwargs)
+        preguntas = Pregunta.objects.filter(
+            evaluacion=self.instance
+        )
+
+        for field in self.fields:
+            self.fields[field].widget = HiddenInput()
+
+        for pregunta in preguntas:
+            field_name = pregunta.componente.nombre #'pregunta_%s' % (pregunta.id,)
+
+            self.fields[field_name] = forms.BooleanField(required = False)
+            self.initial[field_name] = pregunta.valor == 'SI'
+
+    def clean(self):
+        cleaned_data = super().clean()
+        visita = cleaned_data.get('visita')
+        cuestionario = cleaned_data.get('cuestionario')
+        evaluacion = Evaluacion.objects.get(visita=visita, cuestionario=cuestionario)
+
+        self.cleaned_data['completada'] = True
+
+        preguntas = Pregunta.objects.filter(
+            evaluacion=evaluacion
+        )
+
+        for pregunta in preguntas:
+            field_name = pregunta.componente.nombre # 'pregunta_%s' % (pregunta.id,)
+            if self.cleaned_data.get(field_name):
+                # id = field_name.split('_')[1]
+                #pregunta = evaluacion.preguntas.filte(cuestionario__nombre = ) # Pregunta.objects.get(id=id)
+                self.cleaned_data[field_name] = 'SI'
+            else:
+                self.cleaned_data[field_name] = 'NO'
+
+
+    def save(self, commit=True):
+        instance = super(ScreeningForm, self).save(commit=True)
+
+        for field, value in self.cleaned_data.items():
+            if field not in ('visita', 'cuestionario', 'completada', 'todo_ok'):
+                pregunta = instance.preguntas.get(componente__nombre = field)
+                pregunta.valor = value
+                pregunta.save()
+
+        return instance
+
+
+class EvaluacionForm(forms.ModelForm):
+
+    class Meta:
+        model = Evaluacion
+        fields = '__all__'
+
+    def __init__(self, *args, **kwargs):
+
+        super().__init__(*args, **kwargs)
+        preguntas = Pregunta.objects.filter(
+            evaluacion=self.instance
+        )
+
+        # for field in self.form_fields:
+        #     field_key = field.slug
+        #     field_class = fields.CLASSES[field.field_type]
+        #     field_widget = fields.WIDGETS.get(field.field_type)
+        #     field_args = {"label": field.label, "required": field.required,
+        #                   "help_text": field.help_text}
+        #     arg_names = field_class.__init__.__code__.co_varnames
+        #     if "max_length" in arg_names:
+        #         field_args["max_length"] = settings.FIELD_MAX_LENGTH
+        #     if "choices" in arg_names:
+        #         choices = list(field.get_choices())
+        #         if field.field_type == fields.SELECT and not (field.required and field.default):
+        #             # The first OPTION with attr. value="" display only if...
+        #             #   1. ...the field is not required.
+        #             #   2. ...the field is required and the default is not set.
+        #             text = "" if field.placeholder_text is None else field.placeholder_text
+        #             choices.insert(0, ("", text))
+        #         field_args["choices"] = choices
+        #     if field_widget is not None:
+        #         field_args["widget"] = field_widget
+
+        for field in self.fields:
+            self.fields[field].widget = HiddenInput()
+
+        for pregunta in preguntas:
+
+            field_name = 'pregunta_%s' % (pregunta.id,)
+
+            if pregunta.componente.tipo == 'TEXT':
+                self.fields[field_name] = forms.CharField(required=pregunta.componente.required)
+                self.initial[field_name] = pregunta.valor
+
+            elif pregunta.componente.tipo == 'NUM':
+                self.fields[field_name] = forms.FloatField(required=pregunta.componente.required)
+                self.initial[field_name] = pregunta.valor or 0
+
+            elif pregunta.componente.tipo == 'VAL':
+                choices = pregunta.componente.get_choices()
+
+                self.fields[field_name] = forms.MultipleChoiceField(choices=choices, widget=forms.CheckboxSelectMultiple(), initial=[pregunta.valor], required=pregunta.componente.required)
+                self.initial[field_name] = [pregunta.valor]
+            elif pregunta.componente.tipo == 'LIST':
+                choices = pregunta.componente.get_choices()
+                print(choices)
+                self.fields[field_name] = forms.ChoiceField(choices=choices, widget=forms.Select(), required=pregunta.componente.required)
+                # self.fields[field_name] = forms.MultipleChoiceField(choices=choices, widget=forms.CheckboxSelectMultiple(), required=pregunta.componente.required)
+                self.initial[field_name] = [pregunta.valor]
+            elif pregunta.componente.tipo == 'MULTIPLE':
+                choices = pregunta.componente.get_choices()
+                self.fields[field_name] = forms.MultipleChoiceField(choices=choices, widget=forms.CheckboxSelectMultiple(), required=pregunta.componente.required)
+                self.initial[field_name] = [pregunta.valor]
+            else:
+                self.fields[field_name] = forms.CharField(required=pregunta.componente.required)
+                self.initial[field_name] = pregunta.valor
+
+            self.fields[field_name].tipo = pregunta.componente.tipo
+            self.fields[field_name].label = pregunta.componente.nombre
+            self.fields[field_name].help_text = pregunta.componente.descripcion
+            self.fields[field_name].bloque = pregunta.componente.bloque
+
+
+    def clean(self):
+        cleaned_data = super().clean()
+        visita = cleaned_data.get('visita')
+        cuestionario = cleaned_data.get('cuestionario')
+        evaluacion = Evaluacion.objects.get(visita=visita,cuestionario=cuestionario)
+
+        self.cleaned_data['completada'] = True
+
+        preguntas = Pregunta.objects.filter(
+            evaluacion=evaluacion
+        )
+
+        for pregunta in preguntas:
+            field_name = 'pregunta_%s' % (pregunta.id,)
+            if self.cleaned_data.get(field_name):
+                id = field_name.split('_')[1]
+                pregunta = Pregunta.objects.get(id=id)
+                if pregunta.componente.tipo in ('VAL', 'LIST'):
+                    self.cleaned_data[field_name] = self.cleaned_data[field_name][0]
+            else:
+                self.cleaned_data[field_name] = ''
+
+
+
+    def save(self, commit=True):
+        instance = super(EvaluacionForm, self).save(commit=True)
+
+        # instance.course = self.course
+        # instance.user = self.user
+        # if commit:
+        #     instance.save()
+
+
+
+        # set evaluacion fields
+        # evaluacion.first_name = self.cleaned_data[“first_name”]
+
+        # preguntas = Pregunta.objects.filter(
+        #     evaluacion=self.instance.evaluacion
+        # )
+
+        for field, value in self.cleaned_data.items():
+            if field.startswith('pregunta'):
+                pk = field.split('_')[1]
+                pregunta = Pregunta.objects.get(pk=pk)
+                pregunta.valor = value
+                pregunta.save()
+        # for pregunta in preguntas:
+        #     field_name = 'pregunta_%s' % (pregunta.id,)
+        #     if self.cleaned_data.get(field_name):
+        #         pregunta.valor = self.cleaned_data.get(field_name)
+
+        return instance
