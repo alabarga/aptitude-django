@@ -8,25 +8,25 @@ from django.urls import reverse
 from multiselectfield import MultiSelectField
 
 _SEX = (
-	(1, _("Hombre")),
-	(2, _("Mujer")),
-	)
+    (1, _("Hombre")),
+    (2, _("Mujer")),
+    )
 
 _ASA = (
-	(1, _("Hombre")),
-	(2, _("Mujer")),
-	)
+    (1, _("Hombre")),
+    (2, _("Mujer")),
+    )
 
 _NO_YES = (
-	(0, _("No")),
-	(1, _("Sí")),
-	)
+    (0, _("No")),
+    (1, _("Sí")),
+    )
 
 _NO_YES_U = (
-	(0, _("No")),
-	(1, _("Sí")),
-	(-1, _("Desconocido")),
-	)
+    (0, _("No")),
+    (1, _("Sí")),
+    (-1, _("Desconocido")),
+    )
 
 # - Nombre
 # - Apellidos
@@ -132,63 +132,63 @@ class Registro(models.Model):
 # Motivo de evaluación: impresión de fragilidad/ queja cognitiva/ desconocido
 
 _VIVIENDA = (
-	(1, _("En su casa")),
-	(2, _("En casa de un hijo/hija")),
-	(3, _("En casa de otro familiar")),
-	(4, _("En un piso para personas mayores")),
+    (1, _("En su casa")),
+    (2, _("En casa de un hijo/hija")),
+    (3, _("En casa de otro familiar")),
+    (4, _("En un piso para personas mayores")),
 )
 _NIVEL_ESTUDIOS  = (
-	(0, _("No escolarizado")),
-	(1, _("Estudios primarios")),
-	(2, _("Estudios de secundaria")),
-	(3, _("Bachillerato")),
-	(4, _("Estudios universitarios")),
-	(-1, _("Desconocido")),
-	)
+    (0, _("No escolarizado")),
+    (1, _("Estudios primarios")),
+    (2, _("Estudios de secundaria")),
+    (3, _("Bachillerato")),
+    (4, _("Estudios universitarios")),
+    (-1, _("Desconocido")),
+    )
 
 _CAPTACION  = (
-	(0, _("médico general")),
-	(1, _("especialista")),
-	(2, _("farmacéutico")),
-	(3, _("médico de la mutua")),
-	(4, _("familiar")),
-	(5, _("Ayuntamiento")),
-	(6, _("investigador")),
-	(7, _("estación termal")),
-	(8, _("convocatoria anual")),
-	(9, _("otro")),
-	)
+    (0, _("médico general")),
+    (1, _("especialista")),
+    (2, _("farmacéutico")),
+    (3, _("médico de la mutua")),
+    (4, _("familiar")),
+    (5, _("Ayuntamiento")),
+    (6, _("investigador")),
+    (7, _("estación termal")),
+    (8, _("convocatoria anual")),
+    (9, _("otro")),
+    )
 
 _MOTIVO = (
     (0, _("Sospecha de situación de fragilidad")),
     (1, _("Sospecha de deterioro cognitiva")),
-	(2, _("Seguimiento")),
+    (2, _("Seguimiento")),
     (-1, _("Motivo desconocido")),
     )
 
 _INTERVENCION = (
-	('social', _("Intervención social")),
-	('fisica', _("Intervención física")),
+    ('social', _("Intervención social")),
+    ('fisica', _("Intervención física")),
     ('cognitiva', _("Intervención cognitiva")),
-	('nutricional', _("Intervención nutricional")),
-	('psicologica', _("Intervención psicológica")),
-	('otra', _("Otras intervenciones")),
+    ('nutricional', _("Intervención nutricional")),
+    ('psicologica', _("Intervención psicológica")),
+    ('otra', _("Otras intervenciones")),
     )
 
 _PROFESIONAL = (
     (0, _("enfermera especialista en geriatria")),
-	(1, _("enfermera otros")),
-	(2, _("médico general")),
+    (1, _("enfermera otros")),
+    (2, _("médico general")),
     (3, _("equipo multidisciplinar")),
-	(4, _("médico residente")),
-	(5, _("otros")),
+    (4, _("médico residente")),
+    (5, _("otros")),
     )
 
 _COMP_TYPES = (
     ('TEXT', _("Texto")),
     ('NUM', _("Numérico")),
     ('VAL', _("Lista_Valor")),
-	('LIST', _("Lista")),
+    ('LIST', _("Lista")),
     ('CALC', _("Calculado")),
     )
 
@@ -210,71 +210,71 @@ _DOMINIO = (
     )
 
 _SALUD = (
-	(1, _("Muy buena")),
-	(2, _("Buena")),
+    (1, _("Muy buena")),
+    (2, _("Buena")),
     (3, _("Regular")),
-	(4, _("Mala")),
-	(5, _("Muy mala")),
+    (4, _("Mala")),
+    (5, _("Muy mala")),
     )
 
 _HEALTH_PROBLEMS = (
-	(1, _('Hipertensión')),
-	(2, _('Cardiopatía isquémica sin antecedentes de infarto.')),
-	(3, _('Infarto de miocardio')),
-	(4, _('Insuficiencia cardiaca')),
-	(5, _('Arritmias cardíacas')),
-	(6, _('Otros problemas del corazón')),
-	(7, _('Varices o insuficiencia venosa extremidades inferiores')),
-	(8, _('Enfermedad arterial periférica')),
-	(9, _('Otros problemas neurológicos')),
-	(10, _('Alergias')),
-	(11, _('Enfermedad respiratoria crónica')),
-	(12, _('Enfermedad del tejido conectivo')),
-	(13, _('Inflamación crónica del intestino')),
-	(14, _('Ulcera gastroduodenal')),
-	(15, _('Hepatopatía crónica leve')),
-	(16, _('Hepatopatía crónica moderada/severa')),
-	(17, _('Dislipemia')),
-	(18, _('Problemas de tiroides')),
-	(19, _('Insuficiencia renal crónica moderada/severa')),
-	(20, _('Enfermedad Cerebrovascular')),
-	(21, _('Hemiplejia')),
-	(22, _('Demencia')),
-	(23, _('Depresión')),
-	(24, _('Nerviosismo')),
-	(25, _('Dolores de cabeza o migraña')),
-	(26, _('Enfermedad de Párkinson')),
-	(27, _('Tumor o neoplasia sólida sin metástasis')),
-	(28, _('Tumor o neoplasia sólida con metástasis')),
-	(29, _('Leucemia')),
-	(30, _('Linfoma')),
-	(31, _('Sida definido')),
-	(32, _('Antecedentes de fractura en el último año')),
-	(33, _('Osteoporosis')),
-	(34, _('Artrosis')),
-	(35, _('Problemas de audición')),
-	(36, _('Cataratas no operadas')),
-	(37, _('Otros problemas de visión')),
-	(38, _('Dolor crónico')),
-	(39, _('Diabetes no complicada')),
-	(40, _('Diabetes con lesión en órganos diana')),
-	(41, _('Problemas de espalda (incluye columna y discos intervertebrales)')),
-	(42, _('Otros problemas de visión (degeneración macular senil, problemas de refracción no resueltos con gafas o lentillas)')),
+    (1, _('Hipertensión')),
+    (2, _('Cardiopatía isquémica sin antecedentes de infarto.')),
+    (3, _('Infarto de miocardio')),
+    (4, _('Insuficiencia cardiaca')),
+    (5, _('Arritmias cardíacas')),
+    (6, _('Otros problemas del corazón')),
+    (7, _('Varices o insuficiencia venosa extremidades inferiores')),
+    (8, _('Enfermedad arterial periférica')),
+    (9, _('Otros problemas neurológicos')),
+    (10, _('Alergias')),
+    (11, _('Enfermedad respiratoria crónica')),
+    (12, _('Enfermedad del tejido conectivo')),
+    (13, _('Inflamación crónica del intestino')),
+    (14, _('Ulcera gastroduodenal')),
+    (15, _('Hepatopatía crónica leve')),
+    (16, _('Hepatopatía crónica moderada/severa')),
+    (17, _('Dislipemia')),
+    (18, _('Problemas de tiroides')),
+    (19, _('Insuficiencia renal crónica moderada/severa')),
+    (20, _('Enfermedad Cerebrovascular')),
+    (21, _('Hemiplejia')),
+    (22, _('Demencia')),
+    (23, _('Depresión')),
+    (24, _('Nerviosismo')),
+    (25, _('Dolores de cabeza o migraña')),
+    (26, _('Enfermedad de Párkinson')),
+    (27, _('Tumor o neoplasia sólida sin metástasis')),
+    (28, _('Tumor o neoplasia sólida con metástasis')),
+    (29, _('Leucemia')),
+    (30, _('Linfoma')),
+    (31, _('Sida definido')),
+    (32, _('Antecedentes de fractura en el último año')),
+    (33, _('Osteoporosis')),
+    (34, _('Artrosis')),
+    (35, _('Problemas de audición')),
+    (36, _('Cataratas no operadas')),
+    (37, _('Otros problemas de visión')),
+    (38, _('Dolor crónico')),
+    (39, _('Diabetes no complicada')),
+    (40, _('Diabetes con lesión en órganos diana')),
+    (41, _('Problemas de espalda (incluye columna y discos intervertebrales)')),
+    (42, _('Otros problemas de visión (degeneración macular senil, problemas de refracción no resueltos con gafas o lentillas)')),
 )
 
 _TERRITORIO = (
-	(0, _('Navarra')),
-	(1, _('Alt Urgell')),
-	(2, _('Badalona')),
-	(3, _('Baix Ebre')),
-	(4, _('Reus')),
-	(5, _('Ripollès')),
+    (0, _('Navarra')),
+    (1, _('Alt Urgell')),
+    (2, _('Badalona')),
+    (3, _('Baix Ebre')),
+    (4, _('Reus')),
+    (5, _('Ripollès')),
 )
 
 _DISPONIBILIDAD = (
-	(0, _('Todos')),
-	(1, _('Solo Navarra')),
-	(2, _('Solo Cataluña')),
+    (0, _('Todos')),
+    (1, _('Solo Navarra')),
+    (2, _('Solo Cataluña')),
 )
 
 class Intervencion(models.Model):
@@ -290,25 +290,25 @@ class Intervencion(models.Model):
         db_table = 'aptitude_intervencion'
 
 class Cuestionario(models.Model):
-	nombre = models.CharField(max_length=255)
-	descripcion = models.TextField()
-	dominio = models.CharField(verbose_name = _("Dominio"), max_length=15, choices= _DOMINIO, default='COGNITIVO')
-	order = models.IntegerField(default=1)
-	activo = models.BooleanField(default=False)
+    nombre = models.CharField(max_length=255)
+    descripcion = models.TextField()
+    dominio = models.CharField(verbose_name = _("Dominio"), max_length=15, choices= _DOMINIO, default='COGNITIVO')
+    order = models.IntegerField(default=1)
+    activo = models.BooleanField(default=False)
 
 
-	url = models.URLField(blank=True, null=True)
-	guia = models.FileField(blank=True, null = True, upload_to='docs/')
-	calculo_valor =  models.CharField(max_length=100, default='puntuacion_total')
-	limite =  models.IntegerField(default=0, blank= True, null = True)
-	disponibilidad = models.IntegerField(default=0, choices=_DISPONIBILIDAD, blank= True, null = True)
+    url = models.URLField(blank=True, null=True)
+    guia = models.FileField(blank=True, null = True, upload_to='docs/')
+    calculo_valor =  models.CharField(max_length=100, default='puntuacion_total')
+    limite =  models.IntegerField(default=0, blank= True, null = True)
+    disponibilidad = models.IntegerField(default=0, choices=_DISPONIBILIDAD, blank= True, null = True)
 
-	class Meta:
-	    ordering = ['order',]
-	    db_table='aptitude_cuestionario'
+    class Meta:
+        ordering = ['order',]
+        db_table='aptitude_cuestionario'
 
-	def __str__(self):
-	    return self.nombre
+    def __str__(self):
+        return self.nombre
 
 class Componente(models.Model):
     cuestionario = models.ForeignKey(Cuestionario, on_delete=models.CASCADE, related_name="componentes")
@@ -361,145 +361,145 @@ class Opcion(models.Model):
 
 class Paciente(models.Model):
 
-	codigo = models.CharField(verbose_name = _("Codigo"), max_length=64, blank= True, null = True)
-	user = models.ForeignKey(User, on_delete=models.CASCADE, blank= True, null = True)
-	nombre = models.CharField(verbose_name = _("Nombre"), max_length=64)
-	apellidos = models.CharField(verbose_name = _("Apellidos"), max_length=64)
-	email = models.EmailField(verbose_name = _("Correo electrónico"), max_length=50, blank= True, null = True)
+    codigo = models.CharField(verbose_name = _("Codigo"), max_length=64, blank= True, null = True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, blank= True, null = True)
+    nombre = models.CharField(verbose_name = _("Nombre"), max_length=64)
+    apellidos = models.CharField(verbose_name = _("Apellidos"), max_length=64)
+    email = models.EmailField(verbose_name = _("Correo electrónico"), max_length=50, blank= True, null = True)
 
-	dni = models.CharField(verbose_name = _("DNI"), max_length=10, blank= True, null = True)
-	direccion = models.CharField(verbose_name = _("Dirección"), max_length=255, blank= True, null = True)
-	ciudad = models.CharField(verbose_name = _("Ciudad"), max_length=255, blank= True, null = True)
-	cp = models.CharField(verbose_name = _("Código postal"), max_length=6, blank= True, null = True)
-	territorio = models.IntegerField(verbose_name = _("Territorio"), choices = _TERRITORIO, blank= True, null = True)
-	pais = models.CharField(verbose_name = _("País"), max_length=255, blank= True, null = True)
-	fecha_nacimiento = models.DateField(verbose_name = _("Fecha de nacimiento"), blank= True, null = True)
-	sexo = models.IntegerField(verbose_name = _("Sexo"), choices = _SEX, blank= True, null = True)
-	telefono = models.CharField(verbose_name = _("Teléfono"), max_length=9, blank= True, null = True)
-	consentimiento = models.FileField(verbose_name = _("Consentimiento informado"), blank= True, null = True)
-	vivienda = models.IntegerField(verbose_name = _("Vivienda"), choices = _VIVIENDA, blank= True, null = True)
-	convivientes = models.IntegerField(verbose_name = _("Convivientes"), blank= True, null = True)
+    dni = models.CharField(verbose_name = _("DNI"), max_length=10, blank= True, null = True)
+    direccion = models.CharField(verbose_name = _("Dirección"), max_length=255, blank= True, null = True)
+    ciudad = models.CharField(verbose_name = _("Ciudad"), max_length=255, blank= True, null = True)
+    cp = models.CharField(verbose_name = _("Código postal"), max_length=6, blank= True, null = True)
+    territorio = models.IntegerField(verbose_name = _("Territorio"), choices = _TERRITORIO, default=0)
+    pais = models.CharField(verbose_name = _("País"), max_length=255, blank= True, null = True)
+    fecha_nacimiento = models.DateField(verbose_name = _("Fecha de nacimiento"), blank= True, null = True)
+    sexo = models.IntegerField(verbose_name = _("Sexo"), choices = _SEX, blank= True, null = True)
+    telefono = models.CharField(verbose_name = _("Teléfono"), max_length=9, blank= True, null = True)
+    consentimiento = models.FileField(verbose_name = _("Consentimiento informado"), blank= True, null = True)
+    vivienda = models.IntegerField(verbose_name = _("Vivienda"), choices = _VIVIENDA, blank= True, null = True)
+    convivientes = models.IntegerField(verbose_name = _("Convivientes"), blank= True, null = True)
 
-	internet = models.IntegerField(verbose_name = _("Acceso a internet"), choices = _NO_YES_U, blank= True, null = True)
-	nivel_estudios = models.IntegerField(verbose_name = _("Nivel de estudios"), choices = _NIVEL_ESTUDIOS, blank= True, null = True)
-	captacion = models.IntegerField(verbose_name = _("Captación del paciente"), choices = _CAPTACION, blank= True, null = True)
+    internet = models.IntegerField(verbose_name = _("Acceso a internet"), choices = _NO_YES_U, blank= True, null = True)
+    nivel_estudios = models.IntegerField(verbose_name = _("Nivel de estudios"), choices = _NIVEL_ESTUDIOS, blank= True, null = True)
+    captacion = models.IntegerField(verbose_name = _("Captación del paciente"), choices = _CAPTACION, blank= True, null = True)
 
-	salud = models.IntegerField(verbose_name = _("Salud general"), choices=_SALUD, blank= True, null = True)
-	problemas_num = models.IntegerField(verbose_name = _("Número de problemas"), blank= True, null = True)
-	problemas = MultiSelectField(verbose_name = _("Problemas de salud"), choices=_HEALTH_PROBLEMS, blank= True, null = True)
+    salud = models.IntegerField(verbose_name = _("Salud general"), choices=_SALUD, blank= True, null = True)
+    problemas_num = models.IntegerField(verbose_name = _("Número de problemas"), blank= True, null = True)
+    problemas = MultiSelectField(verbose_name = _("Problemas de salud"), choices=_HEALTH_PROBLEMS, blank= True, null = True)
 
-	# def save(self, *args,**kwargs):
-	#     request = kwargs.pop('request', None)
-	#     super(Paciente, self).save(*args, **kwargs)
-	#     self.codigo = "APT-{:06d}".format(self.pk)
-	#     self.user = request.user
-	#     self.save()
+    # def save(self, *args,**kwargs):
+    #     request = kwargs.pop('request', None)
+    #     super(Paciente, self).save(*args, **kwargs)
+    #     self.codigo = "APT-{:06d}".format(self.pk)
+    #     self.user = request.user
+    #     self.save()
 
-	def nombre_masked(self):
+    def nombre_masked(self):
 
-	    return ' '.join([part[:2] + 'X' * len(part[2:]) for part in "{} {}".format(self.nombre, self.apellidos).split()])
+        return ' '.join([part[:2] + 'X' * len(part[2:]) for part in "{} {}".format(self.nombre, self.apellidos).split()])
 
-	def __str__(self):
-	    return self.codigo
+    def __str__(self):
+        return self.codigo
 
-	class Meta:
-	    db_table='aptitude_paciente'
+    class Meta:
+        db_table='aptitude_paciente'
 
 
 class Visita(models.Model):
 
-	user = models.ForeignKey(User, on_delete=models.CASCADE, blank= True, null = True)
-	paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE, related_name='visitas')
-	fecha = models.DateField(verbose_name = _("Fecha de la visita"), auto_now_add=True)
-	motivo = models.IntegerField(verbose_name = _("Motivo de evaluación"), choices = _MOTIVO, blank= True, null = True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, blank= True, null = True)
+    paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE, related_name='visitas')
+    fecha = models.DateField(verbose_name = _("Fecha de la visita"), auto_now_add=True)
+    motivo = models.IntegerField(verbose_name = _("Motivo de evaluación"), choices = _MOTIVO, blank= True, null = True)
 
-	muestra = models.BooleanField(verbose_name = _("Recoge muestra"), default=False)
-	codigo_muestra = models.CharField(verbose_name = _("Codigo muestra"), max_length=5, blank= True, null = True)
+    muestra = models.BooleanField(verbose_name = _("Recoge muestra"), default=False)
+    codigo_muestra = models.CharField(verbose_name = _("Codigo muestra"), max_length=5, blank= True, null = True)
 
-	cuestionarios = models.ManyToManyField(Cuestionario)
+    cuestionarios = models.ManyToManyField(Cuestionario)
 
-	dominios = models.CharField(verbose_name = _("Dominios"), max_length=255, blank= True, null = True)
-	informe_medico = models.CharField(verbose_name = _("Informe"), max_length=5, blank= True, null = True)
-	seguimiento = models.CharField(verbose_name = _("Seguimiento"), max_length=5, blank= True, null = True)
-	nivel_seguimiento = models.CharField(verbose_name = _("Nivel de seguimiento"), max_length=5, blank= True, null = True)
+    dominios = models.CharField(verbose_name = _("Dominios"), max_length=255, blank= True, null = True)
+    informe_medico = models.CharField(verbose_name = _("Informe"), max_length=5, blank= True, null = True)
+    seguimiento = models.CharField(verbose_name = _("Seguimiento"), max_length=5, blank= True, null = True)
+    nivel_seguimiento = models.CharField(verbose_name = _("Nivel de seguimiento"), max_length=5, blank= True, null = True)
 
-	intervencion = models.ManyToManyField(Intervencion, blank=True)
+    intervencion = models.ManyToManyField(Intervencion, blank=True)
 
-	notas = models.TextField(blank= True, null = True)
+    notas = models.TextField(blank= True, null = True)
 
-	def is_cat(self):
-		return self.paciente.territorio > 0
+    def is_cat(self):
+        return self.paciente.territorio > 0
 
-	def lista_dominios(self):
-	    return ['COGNITIVO', 'FUNCIONAL', 'VITALIDAD', 'VISION', 'AUDICION', 'PSICOLOGICO', 'COMPLEMENTARIOS']
+    def lista_dominios(self):
+        return ['COGNITIVO', 'FUNCIONAL', 'VITALIDAD', 'VISION', 'AUDICION', 'PSICOLOGICO', 'COMPLEMENTARIOS']
 
-	def dominios_afectados(self):
-	    icope = self.evaluaciones.get(cuestionario__dominio='SCREENING')
-	    return set([ p.componente.nombre.replace('-1','') for p in icope.preguntas.all() if p.valor == 'SI' ]) - {'TODO_OK'}
+    def dominios_afectados(self):
+        icope = self.evaluaciones.get(cuestionario__dominio='SCREENING')
+        return set([ p.componente.nombre.replace('-1','') for p in icope.preguntas.all() if p.valor == 'SI' ]) - {'TODO_OK'}
 
-	def solo_sensorial(self):
-	    dominios = self.dominios_afectados()
+    def solo_sensorial(self):
+        dominios = self.dominios_afectados()
 
-	    if dominios == {'VISION'} or dominios == {'VISION', 'AUDICION'} or  dominios == {'AUDICION'}:
-	        return True
-	    else:
-	        return False
+        if dominios == {'VISION'} or dominios == {'VISION', 'AUDICION'} or  dominios == {'AUDICION'}:
+            return True
+        else:
+            return False
 
-	def add_cuestionarios(self):
-		if self.is_cat():
-			self.add_all_cuestionarios()
-		elif len(self.dominios_afectados()):
-		    if self.solo_sensorial():
-		        for d in self.dominios_afectados():
-		            self.add_cuestionarios_dominio(d)
-		    else:
-		        self.add_all_cuestionarios()
+    def add_cuestionarios(self):
+        if self.is_cat():
+            self.add_all_cuestionarios()
+        elif len(self.dominios_afectados()):
+            if self.solo_sensorial():
+                for d in self.dominios_afectados():
+                    self.add_cuestionarios_dominio(d)
+            else:
+                self.add_all_cuestionarios()
 
-	def add_all_cuestionarios(self):
-		cuestionarios = Cuestionario.objects.filter(order__gte=1).exclude(activo=0)
+    def add_all_cuestionarios(self):
+        cuestionarios = Cuestionario.objects.filter(order__gte=1).exclude(activo=0)
 
-		if self.is_cat():
-			cuestionarios = cuestionarios.exclude(disponibilidad=1)
+        if self.is_cat():
+            cuestionarios = cuestionarios.exclude(disponibilidad=1)
 
-		if not self.is_cat():
-			cuestionarios = cuestionarios.exclude(disponibilidad=2)
+        if not self.is_cat():
+            cuestionarios = cuestionarios.exclude(disponibilidad=2)
 
-		for cuestionario in cuestionarios: #self.cuestionarios.all()
-		    self.cuestionarios.add(cuestionario)
-		    evaluacion = Evaluacion.objects.get_or_create(
-		        visita=self,
-		        cuestionario=cuestionario
-		    )
+        for cuestionario in cuestionarios: #self.cuestionarios.all()
+            self.cuestionarios.add(cuestionario)
+            evaluacion = Evaluacion.objects.get_or_create(
+                visita=self,
+                cuestionario=cuestionario
+            )
 
-	def add_cuestionarios_dominio(self, dominio):
-	    cuestionarios = Cuestionario.objects.filter(dominio=dominio)
+    def add_cuestionarios_dominio(self, dominio):
+        cuestionarios = Cuestionario.objects.filter(dominio=dominio)
 
-	    for cuestionario in cuestionarios: #self.cuestionarios.all()
-	        self.cuestionarios.add(cuestionario)
-	        evaluacion = Evaluacion.objects.get_or_create(
-	            visita=self,
-	            cuestionario=cuestionario
-	        )
+        for cuestionario in cuestionarios: #self.cuestionarios.all()
+            self.cuestionarios.add(cuestionario)
+            evaluacion = Evaluacion.objects.get_or_create(
+                visita=self,
+                cuestionario=cuestionario
+            )
 
-	@property
-	def cuestionarios_completos(self):
-	    return True
+    @property
+    def cuestionarios_completos(self):
+        return True
 
-	@property
-	def motivo_evaluacion(self):
-	    if self.motivo is not None:
-	        return _MOTIVO[self.motivo][1]
-	    else:
-	        return 'Desconocido'
+    @property
+    def motivo_evaluacion(self):
+        if self.motivo is not None:
+            return _MOTIVO[self.motivo][1]
+        else:
+            return 'Desconocido'
 
-	def __str__(self):
-	    return "{} ({})".format(_MOTIVO[self.motivo][1], self.fecha)
+    def __str__(self):
+        return "{} ({})".format(_MOTIVO[self.motivo][1], self.fecha)
 
-	def get_absolute_url(self):
-	    return reverse('visita-eval', args=[self.id,])
+    def get_absolute_url(self):
+        return reverse('visita-eval', args=[self.id,])
 
-	class Meta:
-	    db_table='aptitude_visita'
+    class Meta:
+        db_table='aptitude_visita'
 
 @receiver(models.signals.post_save, sender=Visita)
 def execute_after_visit_save(sender, instance, created, *args, **kwargs):
@@ -508,36 +508,36 @@ def execute_after_visit_save(sender, instance, created, *args, **kwargs):
         instance.add_cuestionarios_dominio('SCREENING')
 
 class Evaluacion(models.Model):
-	visita = models.ForeignKey(Visita, on_delete=models.CASCADE, related_name='evaluaciones')
-	cuestionario = models.ForeignKey(Cuestionario, on_delete=models.CASCADE)
-	completada = models.BooleanField(default=False)
+    visita = models.ForeignKey(Visita, on_delete=models.CASCADE, related_name='evaluaciones')
+    cuestionario = models.ForeignKey(Cuestionario, on_delete=models.CASCADE)
+    completada = models.BooleanField(default=False)
 
-	def __str__(self):
-		return '{}'.format(self.cuestionario.nombre)
-		#return '{} - {}'.format(self.id, self.cuestionario.nombre)
+    def __str__(self):
+        return '{}'.format(self.cuestionario.nombre)
+        #return '{} - {}'.format(self.id, self.cuestionario.nombre)
 
-	@property
-	def resultado(self):
+    @property
+    def resultado(self):
 
-	    return self.puntuacion > self.cuestionario.limite
+        return self.puntuacion > self.cuestionario.limite
 
-	@property
-	def puntuacion(self):
-	    return sum([p.valor_num for p in self.preguntas.all() if p.componente.tipo == 'VAL'])
+    @property
+    def puntuacion(self):
+        return sum([p.valor_num for p in self.preguntas.all() if p.componente.tipo == 'VAL'])
 
-	def get_absolute_url(self):
-	    return reverse('evaluacion', args=[self.id,])
+    def get_absolute_url(self):
+        return reverse('evaluacion', args=[self.id,])
 
-	def add_preguntas(self):
-	    for componente in self.cuestionario.componentes.all().order_by('order'):
-	        pregunta = Pregunta.objects.get_or_create(
-	            evaluacion=self,
-	            componente=componente,
-	        )
+    def add_preguntas(self):
+        for componente in self.cuestionario.componentes.all().order_by('order'):
+            pregunta = Pregunta.objects.get_or_create(
+                evaluacion=self,
+                componente=componente,
+            )
 
-	class Meta:
-	    verbose_name_plural = "evaluaciones"
-	    db_table = 'aptitude_evaluacion'
+    class Meta:
+        verbose_name_plural = "evaluaciones"
+        db_table = 'aptitude_evaluacion'
 
 @receiver(models.signals.post_save, sender=Evaluacion)
 def execute_after_eval_save(sender, instance, created, *args, **kwargs):
