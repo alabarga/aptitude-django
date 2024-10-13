@@ -23,6 +23,7 @@ from django.conf.urls.static import static
 import django_dropimages
 
 from django.urls import path
+from django.conf import settings
 
 app_name = 'aptitude'
 
@@ -43,14 +44,19 @@ urlpatterns = [
     path('registro/', RegistroView.as_view(), name='registro'),
 
     path('pacientes/', PacienteList.as_view(), name='paciente-lista'),
+    path('pacientes/nuevo/', NuevoPaciente.as_view(), name='paciente-nuevo'),
     path('pacientes/buscar/', SearchView.as_view(), name='paciente-busqueda'),
     path('pacientes/buscar/<int:pk>/', PacienteCheck.as_view(), name='paciente-encontrado'),
     path('pacientes/<int:pk>/', PacienteUpdate.as_view(), name='paciente-detalle'),
     path('pacientes/<int:pk>/salud/', PacienteSalud.as_view(), name='paciente-salud'),
-    path('pacientes/<int:pk>/visita/', NuevaVisita.as_view(), name='visita-nueva'),
+    path('pacientes/<int:pk>/visita/', create_visit_view, name='visita-nueva'),
+    path('pacientes/<int:pk>/visitas/', PacienteVisitas.as_view(), name='visita-lista'),
+    path('pacientes/<int:pk>/visitas/step_1/', create_visit_step_1, name='visita-step-1'),
+    path('pacientes/<int:pk>/visitas/step_2/', create_visit_step_1, name='visita-step-2'),
     path('visita/<int:pk>/', VisitaDetail.as_view(), name='visita-detalle'),
     path('visita/<int:pk>/cerrar/', VisitaCierre.as_view(), name='visita-cerrar'),
     path('visita/<int:pk>/eval/', VisitaEval.as_view(), name='visita-eval'),
+    path('visita/<int:pk>/step1/', VisitaEval1.as_view(), name='visita-eval-step-1'),
     path('screening/<int:pk>/', ScreeningView.as_view(), name='screening'),
     path('evaluacion/<int:pk>/', EvalView.as_view(), name='evaluacion'),
 
@@ -67,3 +73,7 @@ urlpatterns = [
     path('profile/', include('profile.urls', namespace='profile')),
     path('api/', include(router.urls)),
 ]
+
+# Serve media files during development
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

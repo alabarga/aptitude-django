@@ -53,7 +53,7 @@
                 <div class="header-widget">
                     {% if user.is_authenticated %}
                     
-                    <a href="/pacientes/buscar/" class="button border with-icon">Nueva evaluación<i class="sl sl-icon-plus"></i></a>
+                    <a href="/pacientes/nuevo/" class="button border with-icon">Nuevo paciente<i class="sl sl-icon-plus"></i></a>
                     <!-- User Menu -->
                     <div class="user-menu">
                         <div class="user-name"><span><img src="/static/img/dashboard-avatar.jpg" alt=""></span>{{ user.get_username }}</div>
@@ -70,7 +70,7 @@
                     </div>
                     {% else %}
 
-                    <a href="/registro/" class="button border with-icon">Regístrate<i class="sl sl-icon-plus"></i></a>
+                    <!--a href="/registro/" class="button border with-icon">Regístrate<i class="sl sl-icon-plus"></i></a-->
                     <a href="#sign-in-dialog" class="sign-in popup-with-zoom-anim"><i class="sl sl-icon-login"></i> Entrar</a>
 
                     {% endif %}
@@ -93,7 +93,7 @@
 
                     <ul class="tabs-nav">
                         <li class=""><a href="#tab1">Login</a></li>
-                        <li><a href="#tab2">Nueva cuenta</a></li>
+                        <!--li><a href="#tab2">Nueva cuenta</a></li-->
                     </ul>
 
                     <div class="tabs-container alt">
@@ -124,7 +124,7 @@
                             </form>
                         </div>
 
-                        <!-- Register -->
+                        <!-- Register 
                         <div class="tab-content" id="tab2" style="display: none;">
 
                             <form id="registration_form" method="post" class="register" action="/accounts/register/">
@@ -171,7 +171,7 @@
                            
                             </form>
                         </div>
-                        <!-- end register -->
+                        -->
 
                     </div>
                 </div>

@@ -277,6 +277,12 @@ _DISPONIBILIDAD = (
     (2, _('Solo Cataluña')),
 )
 
+_STEPS = (
+    (0, _('Prueba')),
+    (1, _('Step 1')),
+    (2, _('Step 2')),
+)
+
 class Intervencion(models.Model):
     tipo = models.CharField(max_length=50, choices=_INTERVENCION)
     detalle = models.CharField(max_length=100)
@@ -322,6 +328,20 @@ class Componente(models.Model):
     funcion = models.CharField(verbose_name = _("Funcion"), max_length=100, blank= True, null = True)
     order =  models.IntegerField(default=0, blank= True, null = True)
 
+    @property
+    def titulo(self):
+        if self.nombre.__contains__('_'):
+            return self.descripcion
+        else:
+            return self.nombre
+    
+    @property
+    def help_text(self):
+        if self.descripcion != self.titulo:
+            return self.descripcion
+        else:
+            return ''
+
     def get_choices(self):
         if self.tipo == 'VAL':
             if self.lista == 'SI_NO':
@@ -361,39 +381,51 @@ class Opcion(models.Model):
 
 class Paciente(models.Model):
 
-    codigo = models.CharField(verbose_name = _("Codigo"), max_length=64, blank= True, null = True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, blank= True, null = True)
+    codigo = models.CharField(verbose_name = _("Codigo"), max_length=7, blank= True, editable=False)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, blank= True, null = False)
+
     nombre = models.CharField(verbose_name = _("Nombre"), max_length=64)
     apellidos = models.CharField(verbose_name = _("Apellidos"), max_length=64)
-    email = models.EmailField(verbose_name = _("Correo electrónico"), max_length=50, blank= True, null = True)
+    dni = models.CharField(verbose_name = _("DNI"), max_length=10, blank=True, null = True)
+    
+    ciudad = models.CharField(verbose_name = _("Ciudad"), max_length=255, blank= False, null = False)
+    telefono = models.CharField(verbose_name = _("Teléfono"), max_length=9, blank=False, null = False)
 
-    dni = models.CharField(verbose_name = _("DNI"), max_length=10, blank= True, null = True)
-    direccion = models.CharField(verbose_name = _("Dirección"), max_length=255, blank= True, null = True)
-    ciudad = models.CharField(verbose_name = _("Ciudad"), max_length=255, blank= True, null = True)
-    cp = models.CharField(verbose_name = _("Código postal"), max_length=6, blank= True, null = True)
-    territorio = models.IntegerField(verbose_name = _("Territorio"), choices = _TERRITORIO, default=0)
-    pais = models.CharField(verbose_name = _("País"), max_length=255, blank= True, null = True)
-    fecha_nacimiento = models.DateField(verbose_name = _("Fecha de nacimiento"), blank= True, null = True)
-    sexo = models.IntegerField(verbose_name = _("Sexo"), choices = _SEX, blank= True, null = True)
-    telefono = models.CharField(verbose_name = _("Teléfono"), max_length=9, blank= True, null = True)
-    consentimiento = models.FileField(verbose_name = _("Consentimiento informado"), blank= True, null = True)
+    fecha_nacimiento = models.DateField(verbose_name = _("Fecha de nacimiento"), blank= False, null = False)
+    sexo = models.IntegerField(verbose_name = _("Sexo"), choices = _SEX, blank= False, null = False)
+    
+    territorio = models.IntegerField(verbose_name = _("Territorio"), choices = _TERRITORIO, blank= True, null = False, default=0)
+    pais = models.CharField(verbose_name = _("País"), max_length=255, blank= True, null = False, default='España')
+
+    nivel_estudios = models.IntegerField(verbose_name = _("Nivel de estudios"), choices = _NIVEL_ESTUDIOS, blank= True, null = True)
     vivienda = models.IntegerField(verbose_name = _("Vivienda"), choices = _VIVIENDA, blank= True, null = True)
     convivientes = models.IntegerField(verbose_name = _("Convivientes"), blank= True, null = True)
 
-    internet = models.IntegerField(verbose_name = _("Acceso a internet"), choices = _NO_YES_U, blank= True, null = True)
-    nivel_estudios = models.IntegerField(verbose_name = _("Nivel de estudios"), choices = _NIVEL_ESTUDIOS, blank= True, null = True)
+    consentimiento = models.FileField(verbose_name = _("Consentimiento informado"), blank= True, null = True)
+    consentimiento_informado = models.BooleanField(blank=False, null=False)
+
+    email = models.EmailField(verbose_name = _("Correo electrónico"), max_length=50, blank= True, null = True)
+    cp = models.CharField(verbose_name = _("Código postal"), max_length=6, blank= True, null = True)
+    direccion = models.CharField(verbose_name = _("Dirección"), max_length=255, blank= True, null = True)
+    internet = models.IntegerField(verbose_name = _("Acceso a internet"), choices = _NO_YES_U, blank= True, null = True, default=0)
     captacion = models.IntegerField(verbose_name = _("Captación del paciente"), choices = _CAPTACION, blank= True, null = True)
 
     salud = models.IntegerField(verbose_name = _("Salud general"), choices=_SALUD, blank= True, null = True)
     problemas_num = models.IntegerField(verbose_name = _("Número de problemas"), blank= True, null = True)
     problemas = MultiSelectField(verbose_name = _("Problemas de salud"), choices=_HEALTH_PROBLEMS, blank= True, null = True)
 
-    # def save(self, *args,**kwargs):
-    #     request = kwargs.pop('request', None)
-    #     super(Paciente, self).save(*args, **kwargs)
-    #     self.codigo = "APT-{:06d}".format(self.pk)
-    #     self.user = request.user
-    #     self.save()
+    def save(self, *args, **kwargs):
+        # First, call the parent class's save() method to handle creation and updates
+        super(Paciente, self).save(*args, **kwargs)
+
+        # Check if `codigo` is not set (only on creation)
+        if not self.codigo:
+            # Generate the `codigo` based on the primary key (which is now generated)
+            self.codigo = "NAV{:04d}".format(self.pk)
+            # Save again to update `codigo`, but only if it was just created
+            super(Paciente, self).save(*args, **kwargs)
+
+        super(Paciente, self).save(*args, **kwargs)  # Save to generate the primary key (pk)
 
     def nombre_masked(self):
 
@@ -411,8 +443,8 @@ class Visita(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, blank= True, null = True)
     paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE, related_name='visitas')
     fecha = models.DateField(verbose_name = _("Fecha de la visita"), auto_now_add=True)
-    motivo = models.IntegerField(verbose_name = _("Motivo de evaluación"), choices = _MOTIVO, blank= True, null = True)
 
+    motivo = models.IntegerField(verbose_name = _("Motivo de evaluación"), choices = _STEPS, blank= True, null = True)
     muestra = models.BooleanField(verbose_name = _("Recoge muestra"), default=False)
     codigo_muestra = models.CharField(verbose_name = _("Codigo muestra"), max_length=5, blank= True, null = True)
 
@@ -435,7 +467,18 @@ class Visita(models.Model):
 
     def dominios_afectados(self):
         icope = self.evaluaciones.get(cuestionario__dominio='SCREENING')
-        return set([ p.componente.nombre.replace('-1','') for p in icope.preguntas.all() if p.valor == 'SI' ]) - {'TODO_OK'}
+        if icope:
+            return icope.preguntas.filter(componente__nombre__endswith='_alert').filter(valor='SI').count() > 0 
+        else:
+            return False
+        
+    def tiene_dominios_afectados(self):
+        icope = self.evaluaciones.get(cuestionario__dominio='SCREENING')
+        if icope:
+            return icope.preguntas.filter(componente__nombre__endswith='_alert').filter(valor='SI').count() > 0 
+        else:
+            return False
+        # return set([ p.componente.nombre.replace('-1','') for p in icope.preguntas.all() if p.valor == 'SI' ]) - {'TODO_OK'}
 
     def solo_sensorial(self):
         dominios = self.dominios_afectados()
@@ -472,7 +515,7 @@ class Visita(models.Model):
             )
 
     def add_cuestionarios_dominio(self, dominio):
-        cuestionarios = Cuestionario.objects.filter(dominio=dominio)
+        cuestionarios = Cuestionario.objects.filter(dominio=dominio).exclude(activo=0)
 
         for cuestionario in cuestionarios: #self.cuestionarios.all()
             self.cuestionarios.add(cuestionario)
@@ -483,7 +526,7 @@ class Visita(models.Model):
 
     @property
     def cuestionarios_completos(self):
-        return True
+        return self.evaluaciones.all().filter(completada=False).count() == 0
 
     @property
     def motivo_evaluacion(self):
@@ -493,7 +536,7 @@ class Visita(models.Model):
             return 'Desconocido'
 
     def __str__(self):
-        return "{} ({})".format(_MOTIVO[self.motivo][1], self.fecha)
+        return "{} ({})".format(_STEPS[self.motivo or 0][1], self.fecha)
 
     def get_absolute_url(self):
         return reverse('visita-eval', args=[self.id,])
@@ -517,6 +560,11 @@ class Evaluacion(models.Model):
         #return '{} - {}'.format(self.id, self.cuestionario.nombre)
 
     @property
+    def paciente(self):
+
+        return self.visita.paciente
+    
+    @property
     def resultado(self):
 
         return self.puntuacion > self.cuestionario.limite
@@ -529,7 +577,7 @@ class Evaluacion(models.Model):
         return reverse('evaluacion', args=[self.id,])
 
     def add_preguntas(self):
-        for componente in self.cuestionario.componentes.all().order_by('order'):
+        for componente in self.cuestionario.componentes.all().order_by('order','pk'):
             pregunta = Pregunta.objects.get_or_create(
                 evaluacion=self,
                 componente=componente,
@@ -544,8 +592,8 @@ def execute_after_eval_save(sender, instance, created, *args, **kwargs):
     if created:
         instance.add_preguntas()
 
-    if not created and instance.cuestionario.dominio == 'SCREENING':
-        instance.visita.add_cuestionarios()
+    # if not created and instance.cuestionario.dominio == 'SCREENING':
+    #    instance.visita.add_cuestionarios()
 
     #     for p in instance.preguntas.all():
     #         if p.valor == 'SI':
@@ -554,7 +602,7 @@ def execute_after_eval_save(sender, instance, created, *args, **kwargs):
 
 class Pregunta(models.Model):
     evaluacion = models.ForeignKey(Evaluacion, on_delete=models.CASCADE, related_name='preguntas')
-    componente = models.ForeignKey(Componente, on_delete=models.CASCADE)
+    componente = models.ForeignKey(Componente, on_delete=models.CASCADE, related_name='respuestas')
     valor = models.CharField(max_length=100)
 
     @property

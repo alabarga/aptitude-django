@@ -29,14 +29,14 @@ Pacientes
         <div class="row with-forms">
             <div class="col-md-6">
                 <h3>{% trans "Nombre" noop %}: {{object.nombre_masked}} </h3>
-                <h3>{% trans "DNI" noop %}: {{object.dni}} </h3>
+                <h3>{% trans "DNI" noop %}: {{object.dni | default_if_none:''}} </h3>
             </div>        
            
         </div>
 
         <a href="/pacientes/buscar/" class="button preview">Atrás <i class="fa fa-arrow-circle-left"></i>
         </a>
-        <a href="/pacientes/{{object.id}}/visita/" class="button preview">Continuar <i class="fa fa-arrow-circle-right"></i>
+        <a href="/pacientes/{{object.id}}/visitas/" class="button preview">Continuar <i class="fa fa-arrow-circle-right"></i>
         </a>
                 
 

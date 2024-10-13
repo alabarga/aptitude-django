@@ -20,9 +20,11 @@
 
     <div>
 
+    <!--
     <h4>
     {{ evaluacion.cuestionario.descripcion |safe }}
     </h4>
+    -->
 
     {% if evaluacion.cuestionario.guia %}
         <p>
@@ -31,6 +33,9 @@
         </p>
     {% endif %}
 
+    {% if evaluacion.cuestionario.id == 11 %}
+        <img src="/media/SPPB_help.png">
+    {% endif%}
     </div>
 
 
@@ -48,18 +53,30 @@
         <div class="add-listing-section margin-top-45">
 
 
-            <!-- Headline -->
+            <!-- Headline 
             <div class="add-listing-headline">
                 <h3><i class="sl sl-icon-note"></i>{% trans "Cuestionario" noop %}</h3>
             </div>
+            -->
 
             <div class="row with-forms">
                     <div class="col-md-12">
 
                     {% for nombre_bloque in form.visible_fields|bloques %}
-                      <h3>{{ nombre_bloque|default_if_none:"" }}</h3>
-                        {% for field in form.visible_fields|bloque:nombre_bloque %}
 
+                        <h3><i class="sl sl-icon-note"></i> {{ nombre_bloque|default_if_none:"" }}</h3>
+
+
+                        {% for field in form.visible_fields|bloque:nombre_bloque %}
+            
+                        {% if field.field.alert %} 
+                         <div class="special-question">
+                        {% elif field.field.navarra %}
+                         <div class="navarra-question">
+                        {% else %}
+                        <div class="question-box">
+                        {% endif%}
+                        
                           <h4> {{ field.label }}</h4>
                           {% if field.label != field.help_text %}
                           <p> {{ field.help_text }}</p>
@@ -94,6 +111,26 @@
                             {{ field }}
                         {% endif %}
 
+                        {% if field.label == 'IMC' %}
+                        <script>
+                            document.addEventListener("DOMContentLoaded", function() {
+                                const field1 = document.getElementById("id_pregunta_{{ id_height }}");
+                                const field2 = document.getElementById("id_pregunta_{{ id_weight }}");
+                                const calculatedField = document.getElementById("id_pregunta_{{ id_imc }}");
+                    
+                                function calculate() {
+                                    const h = parseFloat(field1.value) || 0;
+                                    const w = parseFloat(field2.value) || 0;
+                                    const bmi = 10000 * w / (h * h);// BMI
+                                    calculatedField.value =  bmi.toFixed(1);  
+                                }
+                    
+                                field1.addEventListener("input", calculate);
+                                field2.addEventListener("input", calculate);
+                            });
+                        </script>
+                        {% endif %}
+                    </div>
 
                         {% endfor %}
                     {% endfor %}

@@ -23,6 +23,26 @@ Nueva evaluación
 <form action="." method="POST" class="submit-form">
     {% csrf_token %}
     {{form.as_p}}
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const dateInput = document.getElementById('id_fecha_nac');
+    
+            dateInput.addEventListener('input', function(e) {
+                let input = e.target.value;
+                input = input.replace(/\D/g, '');  // Remove all non-digit characters
+                console.log(input.length)
+                // Add slashes at appropriate positions
+                if (input.length >= 2 && input.length <= 3) {
+                    input = input.substring(0, 2) + '/' + input.substring(2);
+                } else if (input.length >= 4) {
+                    input = input.substring(0, 2) + '/' + input.substring(2, 4) + '/' + input.substring(4, 8);
+                }
+                
+                e.target.value = input;
+            });
+        });
+    </script>
     <button type="submit" class="btn btn-primary">Buscar</button>
 </form>
 {% endblock %}

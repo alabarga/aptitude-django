@@ -20,7 +20,7 @@ Nueva evaluación
 {% block content %}
 
     {% if request.user.is_superuser %}
-
+    <!--
     <div class="add-listing-section">
 
         <div class="add-listing-headline">
@@ -36,6 +36,7 @@ Nueva evaluación
 
     </div>
 
+    -->
     {% endif %}
 
      <!-- Section -->
@@ -46,14 +47,22 @@ Nueva evaluación
         </div>
 
         <div class="row with-forms">
-                <div class="col-md-6">
+            <div class="col-md-4">
+                <h4>{% trans "Paciente" noop %}</h4>
+                <h3>{{ object.paciente }}</h3>
+                <!--                            
+                <input class="search-field" id="id_shortname" name="shortname" type="text" value=""/>
+                -->
+            </div>   
+      
+                <div class="col-md-4">
                     <h4>{% trans "Fecha de la visita" noop %}</h4>
                     <h3>{{ object.fecha }}</h3>
                     <!--                            
                     <input class="search-field" id="id_shortname" name="shortname" type="text" value=""/>
                     -->
                 </div>   
-                <div class="col-md-6">
+                <div class="col-md-4">
                     <h4>{% trans "Evaluador" noop %}:</h4> 
                     <h3>{{object.user.first_name}} {{object.user.last_name}}</h3>
                     <!--
@@ -71,42 +80,10 @@ Nueva evaluación
                 </div>
             
         </div>  
-
-        <div class="row with-forms">
-            <div class="col-md-6">
-                <h4>{% trans "Motivo de evaluación" noop %}</h4>
-                <h3>{{object.motivo_evaluacion}}</h3>
-                <!--
-                <select class="chosen-select-no-single" id="id_country" name="country">
-                    <option value="" label="blank">{% trans "Motivo de evaluación" noop %}</option>  
-                    <option value="H">{% trans "impresión de fragilidad" noop %}</option>
-                    <option value="M">{% trans "queja cognitiva" noop %}</option>
-                    <option value="M">{% trans "desconocido" noop %}</option>
-                    <option value="M">{% trans "Motivo de evaluación" noop %}</option>
-                    <option value="M">{% trans "Motivo de evaluación" noop %}</option>
-                </select>
-                -->
-            </div>  
             
-            <!-- 
-            <div class="col-md-6">
-                <h3>{% trans "Intervención" noop %}</h3>
-                <select class="chosen-select-no-single" id="id_country" name="country">
-                    <option value="0" label="blank">{% trans "Ninguna" noop %}</option>  
-                    <option value="H">{% trans "intervención social" noop %}</option>
-                    <option value="M">{% trans "intervención física" noop %}</option>
-                    <option value="M">{% trans "intervención cognitiva" noop %}</option>
-                    <option value="M">{% trans "intervención nutricional" noop %}</option>
-                    <option value="M">{% trans "intervención psicológica" noop %}</option>
-                    <option value="M">{% trans "Otras intervenciones" noop %}</option>
-                </select>
-            </div>
-            -->
-        </div>  
-
     </div>
         
-
+    {% if not primera_visita %}
     {% if sensorial %}
 
     <div class="add-listing-section  margin-top-45">
@@ -138,6 +115,8 @@ Nueva evaluación
         </div>
 
     </div>
+    {% endif %}
+
     {% endif %}
 
     {% for dominio in dominios %}
@@ -180,7 +159,7 @@ Nueva evaluación
 
     <div class="margin-top-45">
 
-        <a href="{% url 'visita-cerrar' object.pk %}" class="button border with-icon">Terminar evaluación  <i class="sl  sl-icon-arrow-right-circle "></i></a>
+        <a href="{% url 'visita-lista' object.paciente.pk %}" class="button border with-icon">Terminar evaluación  <i class="sl  sl-icon-arrow-right-circle "></i></a>
         
     </div>
 

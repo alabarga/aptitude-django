@@ -21,12 +21,17 @@ import json
 
 from datetime import datetime
 from django.utils.translation import gettext as _
+from django.contrib.auth import get_user_model
 
 from aptitude_crd.models import _INTERVENCION
 from django.contrib.auth.forms import UserCreationForm
 from registration.backends.admin_approval.views import RegistrationView
 from django.contrib.sites.shortcuts import get_current_site
 from registration import signals
+
+from django.shortcuts import redirect
+
+UserModel = get_user_model
 
 class HomeView(TemplateView):
     template_name = "aptitude/home.html"
@@ -60,11 +65,6 @@ class MaterialesView(TemplateView):
 
 # class PacienteSalud(TemplateView):
 #     template_name = "aptitude_crd/paciente_salud.html"
-
-
-from django.contrib.auth import get_user_model
-
-UserModel = get_user_model
 
 class AptitudeRegistrationView(RegistrationView):
     def register(self, form):
@@ -122,35 +122,92 @@ class RegistroView(CreateView):
     form_class = RegistroForm
 
     def get_context_data(self, **kwargs):
-
         context = super(RegistroView, self).get_context_data(**kwargs)
-
         temas = Tema.objects.all()
         context['temas'] = temas
         return context
 
 # EVALUACIONES
 
+
+# Nuevo paciente /pacientes/nuevo/
+
+class NuevoPaciente(CreateView):
+    model = Paciente
+    template_name = 'aptitude_crd/paciente_nuevo.html'
+    fields = '__all__'
+
+    def get_success_url(self):
+
+        return reverse('visita-lista',args=(self.object.id,))
+    
+    def form_valid(self, form):
+        user = self.request.user
+        form.instance.user = user
+ 
+        return super(NuevoPaciente, self).form_valid(form)
+        
+def create_visit_view(request, pk):
+    # Perform some action
+    user = request.user
+    paciente = Paciente.objects.get(pk=pk)
+    visita = Visita.objects.create(paciente=paciente, 
+                                    user=user)
+
+    # Redirect to another URL, passing parameters
+    return redirect('visita-detalle', pk=visita.pk)
+
+def create_visit_step_1(request, pk):
+    # Perform some action
+    user = request.user
+    paciente = Paciente.objects.get(pk=pk)
+    visita = Visita.objects.create(paciente=paciente, 
+                                    user=user,
+                                    motivo = 1)
+
+    # Redirect to another URL, passing parameters
+    return redirect('visita-eval-step-1', pk=visita.pk)  
+  
+# Lista pacientes /pacientes/
+
+class PacienteList(ListView):
+    model = Paciente
+
 # Buscar paciente /pacientes/buscar/
+
+def get_or_create_paciente(apellidos, fecha_nac, dni=None):
+    # Convert fecha_nac_str from 'dd/mm/yyyy' to a Python date object
+    # fecha_nac = datetime.strptime(fecha_nac_str, '%d/%m/%Y').date()
+
+    # First, try to find the patient by DNI if provided
+    if dni:
+        paciente, created = Paciente.objects.get_or_create(dni=dni, defaults={'apellidos': apellidos, 'fecha_nacimiento': fecha_nac})
+    else:
+        # Otherwise, try to find the patient by apellidos and fecha_nac
+        paciente, created = Paciente.objects.get_or_create(apellidos=apellidos, fecha_nacimiento=fecha_nac)
+
+    if created:
+        print('Creating new user')
+    return paciente, created
 
 class SearchView(LoginRequiredMixin, FormView):
     template_name = 'aptitude_crd/search.html'
     form_class = SearchForm
 
     def form_valid(self, form):
+        apellidos = form.cleaned_data['apellidos']
+        fecha_nac = form.cleaned_data['fecha_nac']
         dni = form.cleaned_data['dni'].upper()
-        patient, created = Paciente.objects.get_or_create(dni=dni)
-        if created:
-            patient.codigo = "APT-{:06d}".format(patient.pk)
-            patient.user = self.request.user
-            patient.dni = dni
-            patient.save()
 
+        patient, created = get_or_create_paciente(apellidos, fecha_nac, dni)
+        if created:
+            
+            patient.codigo = "NAV{:04d}".format(patient.pk)
+            patient.user = self.request.user
+            patient.save()
             return HttpResponseRedirect(reverse_lazy('paciente-detalle', kwargs={'pk': patient.pk}))
         else:
-
             return HttpResponseRedirect(reverse_lazy('paciente-encontrado', kwargs={'pk': patient.pk}))
-
 
 # Buscar paciente /pacientes/buscar/<pk>/
 class PacienteCheck(DetailView):
@@ -160,26 +217,41 @@ class PacienteCheck(DetailView):
 # Buscar paciente /pacientes/<pk>/
 class PacienteUpdate(UpdateView):
     model = Paciente
-    fields = '__all__'
+    fields = ['consentimiento_informado', 'sexo', 'fecha_nacimiento', 'nombre', 'apellidos', 'dni', 'ciudad', 'telefono', 'vivienda', 'convivientes', 'nivel_estudios'] # 
+
+    def form_valid(self, form):
+        print("Form is valid")
+        # Access the cleaned form data and print it
+        print("Form cleaned data:", form.cleaned_data)
+
+        print("Saving form...")
+        self.object = form.save()
+        print("Form saved successfully")
+
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        print("Form is invalid")
+        print(form.errors)  # Print the validation errors for debugging
+        return super().form_invalid(form)
 
     def get_success_url(self):
 
-        url_host = self.request.META.get("HTTP_HOST")
+        # url_host = self.request.META.get("HTTP_HOST")
 
-        if url_host.startswith('cat'):
-            return reverse('paciente-salud',args=(self.object.id,))
+        # if url_host.startswith('cat'):
+        #     return reverse('paciente-salud',args=(self.object.id,))
 
-        return reverse('visita-nueva',args=(self.object.id,))
+        return reverse('visita-lista', args=(self.object.id,))
 
-    def get_context_data(self, **kwargs):
+    # def get_context_data(self, **kwargs):
 
-        context = super(PacienteUpdate, self).get_context_data(**kwargs)
+    #     context = super(PacienteUpdate, self).get_context_data(**kwargs)
 
-        paciente = Paciente.objects.get(pk=self.kwargs.get('pk'))
-        visitas = paciente.visitas
-        context['visitas'] = visitas
-        return context
-
+    #     paciente = Paciente.objects.get(pk=self.kwargs.get('pk'))
+    #     visitas = paciente.visitas
+    #     context['visitas'] = visitas
+    #     return context
 
 # Buscar paciente /pacientes/<pk>/
 class PacienteSalud(UpdateView):
@@ -204,16 +276,29 @@ class PacienteDetail(DetailView):
     model = Paciente
 
     def get_context_data(self, **kwargs):
-
         context = super(PacienteDetail, self).get_context_data(**kwargs)
-
         paciente = Paciente.objects.get(pk=self.kwargs.get('pk'))
         visitas = paciente.visitas
         context['visitas'] = visitas
         return context
 
-class PacienteList(ListView):
+class PacienteVisitas(DetailView):
     model = Paciente
+    template_name = 'aptitude_crd/paciente_visitas.html'
+    def get_context_data(self, **kwargs):
+        context = super(PacienteVisitas, self).get_context_data(**kwargs)
+        paciente = Paciente.objects.get(pk=self.kwargs.get('pk'))
+        visitas = paciente.visitas.all().order_by('-fecha')
+
+        step1_finished = Evaluacion.objects.filter(visita__paciente__id=self.object.id).filter(completada=True).count()
+        step1_pending = Evaluacion.objects.filter(visita__paciente__id=self.object.id).filter(completada=False).count()
+        
+        context['step1_finished'] = step1_finished
+        context['step1_pending'] = step1_pending
+        context['visitas'] = visitas
+        return context
+    
+
 
 class NuevaVisita(CreateView):
     model = Visita
@@ -273,7 +358,7 @@ class VisitaDetail(DetailView):
         context['variables'] = variables
 
         screening = Evaluacion.objects.filter(visita=self.object).filter(cuestionario__dominio='SCREENING').first()
-        context['screening_url'] = '/screening/{}/'.format(screening.id)
+        context['screening_url'] = '/evaluacion/{}/'.format(screening.id)
 
         return context
 
@@ -304,6 +389,20 @@ class ScreeningView(LoginRequiredMixin, UpdateView):
         return super().form_valid(form)
 
 
+class VisitaEval1(DetailView):
+    model = Visita
+    template_name = 'aptitude_crd/visita_eval.html'
+
+    def get_context_data(self, **kwargs):
+
+        context = super(VisitaEval1, self).get_context_data(**kwargs)
+
+        context['primera_visita'] = True
+        context['dominios'] = ['ANTROPOMETRICO', 'SCREENING']
+        
+        return context
+
+
 class VisitaEval(DetailView):
     model = Visita
     template_name = 'aptitude_crd/visita_eval.html'
@@ -323,19 +422,40 @@ class VisitaEval(DetailView):
             context['dominios'] = self.object.lista_dominios()
         return context
 
-class EvalView(LoginRequiredMixin, UpdateView):
+class EvalView(UpdateView):
     model = Evaluacion
     form_class = EvaluacionForm
     template_name = "aptitude_crd/evaluacion_view.html"
 
-
+    def get(self, request, *args, **kwargs):
+        print('GET request called')
+        return super().get(request, *args, **kwargs)
+    
     def get_success_url(self):
-        if self.object.cuestionario.dominio == 'ANTROPOMETRICO':
-            # screening = Evaluacion.objects.filter(visita=self.object.visita).filter(cuestionario__order=1).first()
-            # return reverse('screening',args=(screening.id,))
-            return reverse('visita-detalle',args=(self.object.visita.id,))
+        # referer = self.request.META.get('HTTP_REFERER', reverse_lazy('home')) 
+        # return referer
+    
+        # if self.object.cuestionario.dominio == 'ANTROPOMETRICO':
+        #     # screening = Evaluacion.objects.filter(visita=self.object.visita).filter(cuestionario__order=1).first()
+        #     # return reverse('screening',args=(screening.id,))
+        #     return reverse('visita-detalle',args=(self.object.visita.id,))
+        # else:
+        #     return reverse('visita-eval',args=(self.object.visita.id,))
+        
+        
+        # if self.object.cuestionario.dominio == 'ANTROPOMETRICO':
+        #     # screening = Evaluacion.objects.filter(visita=self.object.visita).filter(cuestionario__order=1).first()
+        #     # return reverse('screening',args=(screening.id,))
+        #     return reverse('visita-detalle',args=(self.object.visita.id,))
+        # else:
+        #     return reverse('visita-eval',args=(self.object.visita.id,))
+
+        #return reverse('visita-lista',args=(self.object.visita.paciente.id,))
+
+        if self.object.visita.motivo == 1:
+            return reverse('visita-eval-step-1',args=(self.object.visita.id,))
         else:
-            return reverse('visita-eval',args=(self.object.visita.id,))
+            return reverse('visita-eval-step-2',args=(self.object.visita.id,))
 
     def get_context_data(self, **kwargs):
 
@@ -343,8 +463,21 @@ class EvalView(LoginRequiredMixin, UpdateView):
         evaluacion = Evaluacion.objects.get(pk=self.kwargs.get('pk'))
         context['evaluacion'] = evaluacion
 
-        return context
+        print('Recuperando contexto')
+        context = super(EvalView, self).get_context_data(**kwargs)
+        print(self.object.cuestionario.dominio)
+        # screening = Evaluacion.objects.filter(visita=self.object).filter(cuestionario__dominio='ANTROPOMETRICO').first()
+        if self.object.cuestionario.pk == 13:
+            print('Creando contexto')
+            id_height = self.object.preguntas.get(componente__id = 120).id
+            id_weight = self.object.preguntas.get(componente__id = 121).id
+            id_imc = self.object.preguntas.get(componente__id = 122).id
 
+            context['id_height'] = id_height
+            context['id_weight'] = id_weight
+            context['id_imc'] = id_imc
+            print(context)
+        return context
 
 class VisitaCierre(UpdateView):
     model = Visita

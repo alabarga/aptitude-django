@@ -22,12 +22,13 @@ class Command(BaseCommand):
             nombre_cuestionario = row['Cuestionario'].strip()            
             bloque_cuestionario = row['Bloque'].strip()
             nombre_componente = row['Pregunta'].strip()
+            desc_componente = row['Descripcion'].strip()
             try:
                 nombre_respuesta = row['Respuesta'].strip()
             except:
                 nombre_respuesta = ''
             try:
-                puntuacion = str(row["Puntuación"]).strip()
+                puntuacion = str(row["Puntuacion"]).strip()
             except:
                 puntuacion = ''
             tipo = str(row["Tipo"]).strip()
@@ -41,16 +42,17 @@ class Command(BaseCommand):
                 cuestionario = cuestionario,
                 nombre=nombre_componente,
                 tipo=tipo,
-                defaults={'bloque': bloque_cuestionario, 'descripcion': nombre_componente},
+                defaults={'bloque': bloque_cuestionario, 
+                          'descripcion': desc_componente},
             )
 
-            if tipo in ('VAL', 'LIST',):
-                opcion, created = Opcion.objects.using(database).get_or_create(
-                    componente = componente,
-                    nombre = nombre_respuesta,
-                    valor = puntuacion,
-                    defaults={'tipo':'NUM'},
-                )
+            # if tipo in ('VAL', 'LIST',):
+            #     opcion, created = Opcion.objects.using(database).get_or_create(
+            #         componente = componente,
+            #         nombre = nombre_respuesta,
+            #         valor = puntuacion,
+            #         defaults={'tipo':'NUM'},
+            #     )
 
             # tipo = models.CharField(verbose_name = _("Tipo"), max_length=10, choices= _COMP_TYPES)
             # valor_defecto = models.CharField(verbose_name = _("Valor por defecto"), max_length=100, blank= True, null = True)

@@ -44,9 +44,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django_extensions',
+    #'django_extensions',
     'rest_framework',
-    # 'suit_redactor',
     'import_export',
     'profile',
     'aptitude_crd',
@@ -173,7 +172,7 @@ JAZZMIN_SETTINGS = {
         {"model": "auth.User"},
 
         # App with dropdown menu to all its models pages (Permissions checked against models)
-        {"app": "books"},
+        # {"app": "books"},
     ],
 
     #############
@@ -203,17 +202,17 @@ JAZZMIN_SETTINGS = {
     "hide_models": [],
 
     # List of apps (and/or models) to base side menu ordering off of (does not need to contain all apps/models)
-    "order_with_respect_to": ["auth", "books", "books.author", "books.book"],
+    # "order_with_respect_to": ["auth", "books", "books.author", "books.book"],
 
     # Custom links to append to app groups, keyed on app name
-    "custom_links": {
-        "books": [{
-            "name": "Make Messages",
-            "url": "make_messages",
-            "icon": "fas fa-comments",
-            "permissions": ["books.view_book"]
-        }]
-    },
+    # "custom_links": {
+    #     "books": [{
+    #         "name": "Make Messages",
+    #         "url": "make_messages",
+    #         "icon": "fas fa-comments",
+    #         "permissions": ["books.view_book"]
+    #     }]
+    # },
 
     # Custom icons for side menu apps/models See https://fontawesome.com/icons?d=gallery&m=free
     # for a list of icon classes

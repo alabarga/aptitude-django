@@ -167,7 +167,7 @@ class VisitaAdmin(admin.ModelAdmin):
     view_on_site = True
 
 class PacienteForm(forms.ModelForm):
-    internet  = forms.ChoiceField(choices=_NO_YES_U, widget=forms.RadioSelect)
+    # internet  = forms.ChoiceField(choices=_NO_YES_U, widget=forms.RadioSelect)
     class Meta:
         model = Paciente
         fields = ('__all__')

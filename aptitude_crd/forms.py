@@ -5,6 +5,7 @@ from django.utils.translation import gettext as _
 
 from registration.forms import RegistrationForm
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 
 _COMP_TYPES = (
     ('TEXT', _("Texto")),
@@ -52,7 +53,40 @@ class CustomRegistrationForm(RegistrationForm):
             return user
 
 class SearchForm(forms.Form):
-    dni = forms.CharField()
+    
+    apellidos = forms.CharField(required = False)
+    fecha_nac = forms.DateField(input_formats=('%d/%m/%Y', ), 
+                                required = False,
+                                widget=forms.TextInput(attrs={
+                                        'placeholder': 'dd/mm/yyyy'  # Date format hint
+                                            })
+                                )
+    dni = forms.CharField(required = False)
+
+    def clean(self):
+     
+        cleaned_data = super().clean()
+        print('SearchView CLEAN')
+
+        apellidos = cleaned_data.get('apellidos')
+        fecha_nac = cleaned_data.get('fecha_nac')
+        dni = cleaned_data.get('dni')
+        print(apellidos, fecha_nac, dni)
+
+        # Check that either dni is provided, or both apellidos and fecha_nac are provided
+        if not dni and not (apellidos and fecha_nac):
+            print('Error')
+            raise ValidationError('You must provide either DNI or both Apellidos and Fecha Nacimiento.')
+
+        # If fecha_nac is provided, validate it's in the correct date format (dd/mm/yyyy)
+        # if fecha_nac:
+        #     try:
+        #         datetime.strptime(fecha_nac, '%d/%m/%Y')
+        #     except ValueError:
+        #         raise ValidationError('Fecha de Nacimiento must be in the format dd/mm/yyyy.')
+
+        return cleaned_data
+
 
 class RegistroForm(forms.ModelForm):
 
@@ -106,7 +140,6 @@ class ScreeningForm(forms.ModelForm):
                 self.cleaned_data[field_name] = 'SI'
             else:
                 self.cleaned_data[field_name] = 'NO'
-
 
     def save(self, commit=True):
         instance = super(ScreeningForm, self).save(commit=True)
@@ -174,23 +207,28 @@ class EvaluacionForm(forms.ModelForm):
 
                 self.fields[field_name] = forms.MultipleChoiceField(choices=choices, widget=forms.CheckboxSelectMultiple(), initial=[pregunta.valor], required=pregunta.componente.required)
                 self.initial[field_name] = [pregunta.valor]
+
             elif pregunta.componente.tipo == 'LIST':
                 choices = pregunta.componente.get_choices()
                 print(choices)
                 self.fields[field_name] = forms.ChoiceField(choices=choices, widget=forms.Select(), required=pregunta.componente.required)
                 # self.fields[field_name] = forms.MultipleChoiceField(choices=choices, widget=forms.CheckboxSelectMultiple(), required=pregunta.componente.required)
                 self.initial[field_name] = [pregunta.valor]
+
             elif pregunta.componente.tipo == 'MULTIPLE':
                 choices = pregunta.componente.get_choices()
                 self.fields[field_name] = forms.MultipleChoiceField(choices=choices, widget=forms.CheckboxSelectMultiple(), required=pregunta.componente.required)
                 self.initial[field_name] = [pregunta.valor]
+
             else:
                 self.fields[field_name] = forms.CharField(required=pregunta.componente.required)
                 self.initial[field_name] = pregunta.valor
 
+            self.fields[field_name].navarra = pregunta.componente.nombre.endswith('_navarra')
+            self.fields[field_name].alert = pregunta.componente.nombre.endswith('_alert')
             self.fields[field_name].tipo = pregunta.componente.tipo
-            self.fields[field_name].label = pregunta.componente.nombre
-            self.fields[field_name].help_text = pregunta.componente.descripcion
+            self.fields[field_name].label = pregunta.componente.titulo
+            self.fields[field_name].help_text = pregunta.componente.help_text
             self.fields[field_name].bloque = pregunta.componente.bloque
 
 
@@ -208,11 +246,13 @@ class EvaluacionForm(forms.ModelForm):
 
         for pregunta in preguntas:
             field_name = 'pregunta_%s' % (pregunta.id,)
+            id = field_name.split('_')[1]
+            pregunta = Pregunta.objects.get(id=id)
             if self.cleaned_data.get(field_name):
-                id = field_name.split('_')[1]
-                pregunta = Pregunta.objects.get(id=id)
                 if pregunta.componente.tipo in ('VAL', 'LIST'):
                     self.cleaned_data[field_name] = self.cleaned_data[field_name][0]
+            elif pregunta.componente.tipo in ('NUM', ):
+                self.cleaned_data[field_name] = 0
             else:
                 self.cleaned_data[field_name] = ''
 
