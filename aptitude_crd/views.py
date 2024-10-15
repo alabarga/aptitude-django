@@ -179,8 +179,8 @@ def get_or_create_paciente(apellidos, fecha_nac, dni=None):
     # Convert fecha_nac_str from 'dd/mm/yyyy' to a Python date object
     # fecha_nac = datetime.strptime(fecha_nac_str, '%d/%m/%Y').date()
 
-    # First, try to find the patient by DNI if provided
-    if dni:
+    # First, try to find the patient by codigo if provided
+    if dni: # First, try to find the patient by DNI if provided
         paciente, created = Paciente.objects.get_or_create(dni=dni, defaults={'apellidos': apellidos, 'fecha_nacimiento': fecha_nac})
     else:
         # Otherwise, try to find the patient by apellidos and fecha_nac
@@ -198,8 +198,14 @@ class SearchView(LoginRequiredMixin, FormView):
         apellidos = form.cleaned_data['apellidos']
         fecha_nac = form.cleaned_data['fecha_nac']
         dni = form.cleaned_data['dni'].upper()
+        codigo = form.cleaned_data['codigo'].upper()
 
-        patient, created = get_or_create_paciente(apellidos, fecha_nac, dni)
+        if codigo:
+            patient = Paciente.objects.get(codigo=codigo)
+            created = False
+        else:
+            patient, created = get_or_create_paciente(apellidos, fecha_nac, dni)
+            
         if created:
             
             patient.codigo = "NAV{:04d}".format(patient.pk)

@@ -112,7 +112,10 @@ Pacientes
                 <!-- City -->
                 <div class="col-md-6">
                     <h5>Ciudad</h5>
+                    {{form.ciudad}}
+                    <!--
                     <input type="text" id="id_ciudad" name="ciudad" value="{{ form.ciudad.value|default_if_none:'' }}">
+                    -->
                 </div>
 
                 <div class="col-md-6">
@@ -194,7 +197,30 @@ Pacientes
             </div>
             <div class="col-md-6">
                 <h5>Fecha de nacimiento</h5>
+                {{ form.fecha_nacimiento }}
+                <!--
                 <input class="search-field" id="id_fecha_nacimiento" name="fecha_nacimiento" placeholder="dd/mm/aaaa" type="text" value="{{ form.fecha_nacimiento.value|date:"d/m/Y" }}"/>
+                -->
+
+                <script>
+                    document.addEventListener("DOMContentLoaded", function() {
+                        const dateInput = document.getElementById('id_fecha_nacimiento');
+                
+                        dateInput.addEventListener('input', function(e) {
+                            let input = e.target.value;
+                            input = input.replace(/\D/g, '');  // Remove all non-digit characters
+                            console.log(input.length)
+                            // Add slashes at appropriate positions
+                            if (input.length >= 2 && input.length <= 3) {
+                                input = input.substring(0, 2) + '/' + input.substring(2);
+                            } else if (input.length >= 4) {
+                                input = input.substring(0, 2) + '/' + input.substring(2, 4) + '/' + input.substring(4, 8);
+                            }
+                            
+                            e.target.value = input;
+                        });
+                    });
+                </script>
             </div>
         </div>
 

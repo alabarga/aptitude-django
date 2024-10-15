@@ -7,6 +7,8 @@ from registration.forms import RegistrationForm
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 
+from .models import Paciente
+
 _COMP_TYPES = (
     ('TEXT', _("Texto")),
     ('NUM', _("Numérico")),
@@ -62,6 +64,7 @@ class SearchForm(forms.Form):
                                             })
                                 )
     dni = forms.CharField(required = False)
+    codigo = forms.CharField(required = False)
 
     def clean(self):
      
@@ -71,7 +74,15 @@ class SearchForm(forms.Form):
         apellidos = cleaned_data.get('apellidos')
         fecha_nac = cleaned_data.get('fecha_nac')
         dni = cleaned_data.get('dni')
-        print(apellidos, fecha_nac, dni)
+        codigo = cleaned_data.get('codigo')
+
+        if codigo:
+            try:
+                paciente = Paciente.objects.get(codigo=codigo)
+                return cleaned_data
+            except:
+                raise ValidationError('Paciente no encontrado.')
+
 
         # Check that either dni is provided, or both apellidos and fecha_nac are provided
         if not dni and not (apellidos and fecha_nac):

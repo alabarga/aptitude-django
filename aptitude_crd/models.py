@@ -415,17 +415,14 @@ class Paciente(models.Model):
     problemas = MultiSelectField(verbose_name = _("Problemas de salud"), choices=_HEALTH_PROBLEMS, blank= True, null = True)
 
     def save(self, *args, **kwargs):
-        # First, call the parent class's save() method to handle creation and updates
+        # First, call the parent class's save() method
         super(Paciente, self).save(*args, **kwargs)
 
-        # Check if `codigo` is not set (only on creation)
+        # Only update `codigo` if it's not already set (typically, on creation)
         if not self.codigo:
-            # Generate the `codigo` based on the primary key (which is now generated)
             self.codigo = "NAV{:04d}".format(self.pk)
-            # Save again to update `codigo`, but only if it was just created
-            super(Paciente, self).save(*args, **kwargs)
-
-        super(Paciente, self).save(*args, **kwargs)  # Save to generate the primary key (pk)
+            # Call save again only if `codigo` was updated
+            Paciente.objects.filter(pk=self.pk).update(codigo=self.codigo)
 
     def nombre_masked(self):
 
