@@ -1,0 +1,22 @@
+#!/bin/bash
+PIDFILE="/home/serendipity/apps/aptitude_django/tmp/uwsgi.pid"
+
+if [ ! -e "$PIDFILE" ]; then
+    echo "$PIDFILE missing, maybe uWSGI is already stopped?"
+    exit 99
+fi
+
+PID=$(cat $PIDFILE)
+
+if [ -e "$PIDFILE" ] && (pgrep -u serendipity | grep -x -f $PIDFILE &> /dev/null); then
+  /home/serendipity/apps/aptitude_django/env/bin/uwsgi --stop $PIDFILE
+  sleep 3
+fi
+
+if [ -e "$PIDFILE" ] && (pgrep -u serendipity | grep -x -f $PIDFILE &> /dev/null); then
+  echo "uWSGI did not stop, killing it."
+  sleep 3
+  kill -9 $PID
+fi
+rm -f $PIDFILE
+echo "Stopped."
