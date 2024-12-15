@@ -19,9 +19,9 @@
 
 /* Navarra Questions with Shadow and Background (dd9ca8)*/
 .with-forms .navarra-question {
-    background-color: #dd9ca8;
+    background-color: #FFE5D1;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    border: 1px solid #9f050a;
+    border: 1px solid #FFC288;
     padding: 20px;
     border-radius: 5px;
     margin-bottom: 20px;
@@ -29,9 +29,9 @@
 
 /* Special Questions with Shadow and Background */
 .with-forms .special-question {
-    background-color: #f0f8ff;
+    background-color: #FFC288;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    border: 1px solid #b0c4de;
+    border: 1px solid #fcab55;
     padding: 20px;
     border-radius: 5px;
     margin-bottom: 20px;
@@ -39,16 +39,15 @@
 
 /* Add specific styling for rows with 'special-question' class */
 .basic-table tr.special-row td:not(:first-child) {
-    background-color: #f8d7da; /* Light red background for alert */
-    color: #721c24; /* Dark red text */
+    background-color: #FFC288; /* Light red background for alert */
+    
    
 }
 
 /* Add styling for rows with 'navarra-question' class */
 .basic-table tr.navarra-row td:not(:first-child) {
-    background-color: #d4edda; /* Light green background */
-    color: #155724; /* Dark green text */
-    /* border-left: 4px solid #28a745; /* Green border for visual emphasis */
+    background-color: #FFE5D1; /* Light green background */
+  
 }
 
 /* Default styling for rows with 'question-box' class */

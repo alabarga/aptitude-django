@@ -441,13 +441,12 @@ class EvalView(UpdateView):
 
     def post(self, request, *args, **kwargs):
         # Print the POST data
-        print("Form Data:", request.POST)
 
         # Call the parent class to handle the form submission
         return super().post(request, *args, **kwargs)
         
     def get(self, request, *args, **kwargs):
-        print('GET request called')
+
         return super().get(request, *args, **kwargs)
     
     def get_success_url(self):

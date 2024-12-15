@@ -201,7 +201,7 @@ class EvaluacionForm(forms.ModelForm):
         for field in self.fields:
             self.fields[field].widget = HiddenInput()
 
-        for pregunta in preguntas:
+        for pregunta in preguntas.order_by('componente__bloque', 'componente__order', 'componente__pk'):
 
             field_name = 'pregunta_%s' % (pregunta.id,)
 
@@ -225,12 +225,27 @@ class EvaluacionForm(forms.ModelForm):
                 # self.fields[field_name] = forms.MultipleChoiceField(choices=choices, widget=forms.CheckboxSelectMultiple(), required=pregunta.componente.required)
                 self.initial[field_name] = [pregunta.valor]
 
-            elif pregunta.componente.tipo == 'MULTIPLE':
+            elif pregunta.componente.tipo == 'CHECK':
                 
-                choices = pregunta.componente.get_choices()
-                print(pregunta.componente.nombre, choices)                
+                choices = [('SI', 'Sí'), ('NO', 'No')] # pregunta.componente.get_choices()               
                 self.fields[field_name] = forms.MultipleChoiceField(choices=choices, widget=forms.CheckboxSelectMultiple(), required=pregunta.componente.required)
                 self.initial[field_name] = [pregunta.valor]
+
+            elif pregunta.componente.tipo == 'MULTIPLE':
+                
+                choices = pregunta.componente.get_choices()              
+                self.fields[field_name] = forms.MultipleChoiceField(choices=choices, widget=forms.CheckboxSelectMultiple(), required=pregunta.componente.required)
+                self.initial[field_name] = [pregunta.valor]
+
+            elif pregunta.componente.tipo == 'CALC':
+                
+                if pregunta.componente.nombre == '':
+                    valor = 'A (2 puntos)'
+                else:
+                    valor = ''
+
+                self.fields[field_name] = forms.CharField(required=pregunta.componente.required)
+                self.initial[field_name] = valor
 
             else:
                 self.fields[field_name] = forms.CharField(required=pregunta.componente.required)
@@ -242,6 +257,7 @@ class EvaluacionForm(forms.ModelForm):
             self.fields[field_name].label = pregunta.componente.titulo
             self.fields[field_name].help_text = pregunta.componente.help_text
             self.fields[field_name].bloque = pregunta.componente.bloque
+            self.fields[field_name].opciones = pregunta.componente.get_choices()
 
 
     def clean(self):
@@ -255,16 +271,21 @@ class EvaluacionForm(forms.ModelForm):
         preguntas = Pregunta.objects.filter(
             evaluacion=evaluacion
         )
-        print(cleaned_data)
-        print(self.cleaned_data)
+
         for pregunta in preguntas:
             field_name = 'pregunta_%s' % (pregunta.id,)
             id = field_name.split('_')[1]
             pregunta = Pregunta.objects.get(id=id)
-            print(field_name, pregunta.componente.nombre, 'ok' if cleaned_data.get(field_name) else 'no')
-
-            if pregunta.componente.tipo in ('MULTIPLE', ):
-                self.cleaned_data[field_name] = 'SI'
+            # DEBUG
+            # print(field_name, pregunta.componente.nombre, 'ok' if cleaned_data.get(field_name) else 'no')
+            
+            if pregunta.componente.tipo in ('CHECK', ):
+                o = pregunta.componente.opciones.first().valor
+                n = 'NO' if o == 'SI' else 'SI'
+                if self.cleaned_data.get(field_name):
+                    self.cleaned_data[field_name] = o
+                else:
+                    self.cleaned_data[field_name] = n
 
             if self.cleaned_data.get(field_name):
                 if pregunta.componente.tipo in ('VAL', 'LIST'):
@@ -282,8 +303,6 @@ class EvaluacionForm(forms.ModelForm):
             else:
                 self.cleaned_data[field_name] = ''
 
-        print(cleaned_data)
-        print(self.cleaned_data)
 
     def save(self, commit=True):
         instance = super(EvaluacionForm, self).save(commit=True)

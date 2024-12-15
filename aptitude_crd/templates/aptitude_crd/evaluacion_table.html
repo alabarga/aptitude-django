@@ -83,6 +83,7 @@
                         <td></td>
                     {% endif %}
                     <td data-label="Column 2">
+                        
                         <p>{{ field.label |safe }}</p>
                         {% if field.label != field.help_text %}
                         <p> {{ field.help_text }}</p>
@@ -90,8 +91,8 @@
                        
                     </td>
                     <td data-label="Column 3">
-
-                        {% for c in field.field.choices %}
+                    {% if field.field.tipo == 'CHECK' %}
+                        {% for c in field.field.opciones %}
                         <div class="row with-forms">
                             <div class="col-md-12 checkboxes in-row">
                                 <input id="{{ field.auto_id}}_{{ forloop.counter0 }}" type="checkbox" name="{{ field.name }}"  
@@ -104,6 +105,10 @@
                             </div>
                         </div>                        
                         {% endfor %}
+                        
+                    {% else %}
+                        {{ field }}
+                    {% endif %}
                     </td>   
 
                     </tr>

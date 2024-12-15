@@ -350,7 +350,7 @@ class Componente(models.Model):
                 return [('SI', 'Sí'), ('NO', 'No')]
             else:
                 return [(o.valor, o.nombre) for o in self.opciones.all()]
-        elif self.tipo == 'MULTIPLE':
+        elif self.tipo in  ('CHECK','MULTIPLE'):
              return [(o.valor, o.nombre) for o in self.opciones.all()]
         elif self.tipo == 'LIST':
              return [(o.valor, o.nombre) for o in self.opciones.all()]
@@ -576,7 +576,7 @@ class Evaluacion(models.Model):
         return reverse('evaluacion', args=[self.id,])
 
     def add_preguntas(self):
-        for componente in self.cuestionario.componentes.all().order_by('order','pk'):
+        for componente in self.cuestionario.componentes.filter(order__gte=0).order_by('order','pk'):
             pregunta = Pregunta.objects.get_or_create(
                 evaluacion=self,
                 componente=componente,
